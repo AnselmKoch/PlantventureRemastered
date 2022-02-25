@@ -103,7 +103,8 @@ public class TextFont {
        for(int i = 0; i < text.length(); i++) {
            char c = text.charAt(i);
            if (c == ' ') {
-               return;
+               currX += 0.3f * width;
+               continue;
            }
 
 
@@ -126,8 +127,8 @@ public class TextFont {
 
 
            RenderChar renderChar = new RenderChar(c,
-                   new Vector3f(currX, currY- charYOffset - charHeight, 1.0f),
-                   texCords, charWidth + charXOffset, charHeight + charYOffset, 1.0f, fontTexture, Position.BOTTOMLEFT, color);
+                   new Vector3f(currX + charXOffset, currY- charYOffset - charHeight, 1.0f),
+                   texCords, charWidth, charHeight, 1.0f, fontTexture, Position.BOTTOMLEFT, color);
 
            renderChars[i] = renderChar;
 

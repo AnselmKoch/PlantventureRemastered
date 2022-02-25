@@ -10,9 +10,11 @@ import org.joml.Vector3f;
 public abstract class Tile extends Renderable implements Interactable {
 
     private LootTable lootTable;
+    private boolean isInteractable;
 
     public Tile(Vector3f position, float width, float height, float size, Texture texture, Position center) {
         super(position, width, height, size, texture, center);
+        this.isInteractable = true;
     }
 
     public LootTable getLootTable() {
@@ -21,5 +23,13 @@ public abstract class Tile extends Renderable implements Interactable {
 
     public void setLootTable(LootTable lootTable) {
         this.lootTable = lootTable;
+    }
+
+    public boolean isLooted() {
+        return isInteractable;
+    }
+
+    public void setLooted(boolean looted) {
+        isInteractable = looted;
     }
 }

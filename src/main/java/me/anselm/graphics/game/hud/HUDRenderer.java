@@ -1,11 +1,14 @@
 package me.anselm.graphics.game.hud;
 
+import me.anselm.game.Game;
 import me.anselm.game.entities.player.inventory.ItemStack;
 import me.anselm.game.entities.player.items.Bullet;
 import me.anselm.game.entities.player.items.Item;
+import me.anselm.game.world.hints.PointingArrow;
 import me.anselm.graphics.Window;
 import me.anselm.graphics.game.font.FontRenderer;
 import me.anselm.graphics.game.items.ItemIcon;
+import me.anselm.graphics.game.world.WorldRenderer;
 import me.anselm.graphics.shaders.mesh.RenderMesh;
 import me.anselm.graphics.shaders.Shader;
 import me.anselm.graphics.texture.Texture;
@@ -29,6 +32,8 @@ public class HUDRenderer {
     private static InformationRenderable informationToRender;
     private static ItemContainer itemContainer;
 
+    private static InformationRenderable informationText;
+
     public static void init() {
         logger.info("Initializing HUD renderer...");
 
@@ -45,12 +50,34 @@ public class HUDRenderer {
             renderMesh.addRenderable(itemContainers[i]);
             currX+=itemWidth;
         }
+
+        PointingArrow pointingArrow = new PointingArrow(new Vector3f(400 - 15f / 2f, Window.WORLDHEIGHT / 2, 0.0f),
+                15.0f, 15.0f, 1.0f,AssetStorage.getTexture("arrow"), Position.CENTER);
+
+
+
+       PointingArrow pointingArrow1 = new PointingArrow(new Vector3f(7.5f,100.0f, 0.0f),
+                -15.0f, 15.0f, 1.0f,AssetStorage.getTexture("arrow"), Position.CENTER);
+
+        HUDRenderer.getRenderMesh().addRenderable(pointingArrow1);
+        HUDRenderer.getRenderMesh().addRenderable(pointingArrow);
+
+        PointingArrow pointingArrow2 = new PointingArrow(new Vector3f(200.0f, 200f - 7.5f, 0.0f),
+                15.0f, -15.0f, 1.0f, AssetStorage.getTexture("arrowup"), Position.CENTER);
+        HUDRenderer.getRenderMesh().addRenderable(pointingArrow2);
+
+        PointingArrow pointingArrow3 = new PointingArrow(new Vector3f(200.0f, 7.5f, 0.0f),
+                15.0f, 15.0f, 1.0f, AssetStorage.getTexture("arrowup"), Position.CENTER);
+        HUDRenderer.getRenderMesh().addRenderable(pointingArrow3);
     }
 
     public static void render() {
         logger.info("Rendering HUD...");
 
         renderMesh.render();
+
+        FontRenderer.textFont.drawText("FPS:" + Window.fps +", UPS: " + Window.ups, new Vector3f(0.0f,10.0f,0.0f), 10,10,
+                new Vector4f(1.0f,1.0f,1.0f,1.0f));
 
         for(int i = 0; i < itemContainers.length; i++) {
             ItemContainer itemContainer = itemContainers[i];
@@ -65,14 +92,38 @@ public class HUDRenderer {
             }
 
             Vector3f pos = itemContainer.getPosition();
-            FontRenderer.textFont.drawText(String.valueOf(itemContainer.getItemIcon().getItemStack().getSize()),
-                    new Vector3f(pos.x + 5.0f, pos.y -5.0f, 1.0f), 17.0f,17.0f, new Vector4f(1.0f,1.0f,1.0f,1.0f));
+
+            if(i == Game.player.getInventory().getCurrentItemstack()) {
+                FontRenderer.textFont.drawText(String.valueOf(itemContainer.getItemIcon().getItemStack().getSize()),
+                        new Vector3f(pos.x + 5.0f, pos.y - 5.0f, 1.0f), 17.0f, 17.0f, new Vector4f(1.0f, 0.0f, 0.0f, 1.0f));
+            }else{
+                FontRenderer.textFont.drawText(String.valueOf(itemContainer.getItemIcon().getItemStack().getSize()),
+                        new Vector3f(pos.x + 5.0f, pos.y - 5.0f, 1.0f), 17.0f, 17.0f, new Vector4f(1.0f, 1.0f, 1.0f, 1.0f));
+            }
         }
 
-        if(informationToRender == null) {
-            return;
-        }
-        InformationRenderable informationRenderable = informationToRender;
+
+        int maxAmountFrame;
+        int currentAmountFrame;
+        float transparency;
+
+        if(informationToRender != null) {
+            InformationRenderable informationRenderable = informationToRender;
+
+
+            maxAmountFrame = informationRenderable.getMaxFrames();
+            currentAmountFrame = informationRenderable.getCurrentFrame();
+            transparency = (float) maxAmountFrame / (float) currentAmountFrame;
+            FontRenderer.textFont.drawText(informationRenderable.getText(),
+                    new Vector3f(0.0f, 155.0f, 1.0f), 10.0f, 10.0f,
+                    new Vector4f(0.0f, 0.0f, 0.0f, 1.0f - 1.0f / transparency));
+            informationRenderable.getItemIcon().setColor(new Vector4f(1.0f, 1.0f, 1.0f, 1.0f - 1.0f / transparency));
+            itemContainer.setColor(informationRenderable.getItemIcon().getColor());
+
+
+            renderMesh.changeRenderable(informationRenderable.getItemIcon());
+            renderMesh.changeRenderable(itemContainer);
+            informationRenderable.setCurrentFrame(currentAmountFrame + 1);
 
             if (informationRenderable.getCurrentFrame() >= informationRenderable.getMaxFrames()) {
                 renderMesh.removeRenderable(informationToRender.getItemIcon());
@@ -81,27 +132,29 @@ public class HUDRenderer {
                 InformationRenderable.counter = 0;
                 return;
             }
-
-            int maxAmountFrame = informationRenderable.getMaxFrames();
-            int currentAmountFrame = informationRenderable.getCurrentFrame();
-            float transparency = (float)maxAmountFrame / (float)currentAmountFrame;
-            FontRenderer.textFont.drawText(informationRenderable.getText(),
-                    new Vector3f(0.0f,155.0f, 1.0f), 10.0f, 10.0f,
-                    new Vector4f(0.0f,0.0f,0.0f,1.0f - 1.0f / transparency));
-            informationRenderable.getItemIcon().setColor(new Vector4f(1.0f,1.0f,1.0f,1.0f - 1.0f/transparency));
-            itemContainer.setColor(informationRenderable.getItemIcon().getColor());
-
-            renderMesh.changeRenderable(informationRenderable.getItemIcon());
-            renderMesh.changeRenderable(itemContainer);
-            informationRenderable.setCurrentFrame(currentAmountFrame+1);
-
         }
+
+
+        if(informationText != null) {
+            maxAmountFrame = informationText.getMaxFrames();
+            currentAmountFrame = informationText.getCurrentFrame();
+            transparency = (float)maxAmountFrame / (float)currentAmountFrame;
+            FontRenderer.textFont.drawText(informationText.getText(),
+                    new Vector3f(0.0f, 145.0f,1.0f), 10.0f,10.0f,
+                    new Vector4f(1.0f,1.0f,1.0f,1.0f - 1.0f / transparency));
+            informationText.setCurrentFrame(informationText.getCurrentFrame() + 1);
+        }
+    }
 
     public static void addItemToRender(ItemStack item, int index) {
         ItemIcon itemIcon = new ItemIcon(item, itemContainers[index].getPosition(), 10.0f,10.0f, 1.0f,
                 Item.createInstanceFromItem(item.getItemClass()).getTexture(), Position.TOPLEFT);
         itemContainers[index].setItemIcon(itemIcon);
         renderMesh.addRenderable(itemIcon);
+    }
+
+    public static void drawInformation(int time, String text) {
+        informationText = new InformationRenderable(text, time);
     }
 
     public static void drawInformation(int time, int amount, Class item) {
@@ -115,7 +168,7 @@ public class HUDRenderer {
             renderMesh.removeRenderable(informationToRender.getItemIcon());
             renderMesh.removeRenderable(itemContainer);
         }else{
-           itemContainer = new ItemContainer(itemIcon,
+            itemContainer = new ItemContainer(itemIcon,
                     new Vector3f(0f,155f,1.0f), 10f, 10.0f, 1.0f,  AssetStorage.getTexture("itemcontainer"), Position.BOTTOMLEFT);
         }
 

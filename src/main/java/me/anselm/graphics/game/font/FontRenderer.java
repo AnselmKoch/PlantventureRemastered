@@ -13,7 +13,6 @@ public class FontRenderer {
     public static TextFont textFont;
 
     public static void render() {
-        textFont.drawText("FPS:" + Window.fps, new Vector3f(0.0f,10.0f,0.0f), 10,10, new Vector4f(1.0f,1.0f,1.0f,1.0f));
         renderMesh.render();
         renderMesh.clear();
 
@@ -21,7 +20,7 @@ public class FontRenderer {
 
     public static void init() {
         renderMesh = new FontMesh(Shader.STANDART, 500);
-        textFont = new TextFont("arial");
+        textFont = new TextFont("font");
     }
 
     public static void addText(RenderChar[] renderChars) {

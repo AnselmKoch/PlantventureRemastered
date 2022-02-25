@@ -31,7 +31,7 @@ public abstract class Entity extends Renderable {
     }
 
     public void setMomentum(Vector2f momentum) {
-        this.momentum = momentum;
+        this.momentum.add(momentum).normalize(this.speed);
     }
 
     public abstract void onDamage();

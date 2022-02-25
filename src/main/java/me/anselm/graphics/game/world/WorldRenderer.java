@@ -57,7 +57,6 @@ public class WorldRenderer {
 
     }
 
-
     public static void init() {
         logger.info("Initializing...");
         renderMesh = new RenderMesh(Shader.TILE, 500);

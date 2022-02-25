@@ -1,115 +1,117 @@
 package me.anselm.game.entities.player.inventory;
 
+import me.anselm.game.Game;
 import me.anselm.game.entities.player.items.BasicBullet;
+import me.anselm.game.entities.player.items.Item;
 import me.anselm.graphics.game.hud.HUDRenderer;
 import me.anselm.utils.LoggerUtils;
 import org.slf4j.Logger;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class Inventory {
     private static final Logger logger = LoggerUtils.getLogger(Inventory.class);
 
     private ItemStack[] itemStacks;
-    private HashMap<Class, Integer> map;
-
     private int currentItemstack;
-
     public Inventory() {
-        this.itemStacks = new ItemStack[5];
-        map = new HashMap<>();
+        itemStacks = new ItemStack[5];
         this.currentItemstack = 0;
     }
 
-    public ItemStack[] getItemStacks() {
-        return this.itemStacks;
-    }
-
     public void removeItem(Class clazz) {
+        if(itemStacks[currentItemstack] == null) {
+            return;
+        }
 
-        if(itemStacks[currentItemstack] != null) {
-            itemStacks[currentItemstack].removeFromStack();
-            if(itemStacks[currentItemstack].getSize() == 0) {
-                map.remove(itemStacks[currentItemstack].getItemClass());
-                itemStacks[currentItemstack] = null;
-            }
-        }else{
+        itemStacks[currentItemstack].removeFromStack();
+        if(itemStacks[currentItemstack].getSize() == 0) {
+            itemStacks[currentItemstack] = null;
 
-        int index = map.get(clazz);
-
-        itemStacks[index].removeFromStack();
-
-        if(itemStacks[index].getSize() == 0) {
-            itemStacks[index] = null;
-            map.remove(clazz);
-
-            for (int i = 0; i < itemStacks.length; i++) {
-                ItemStack itemStack = itemStacks[i];
-                if (itemStack == null) {
-                    continue;
-                }
-
-                if (itemStack.getItemClass().equals(clazz)) {
-                    map.put(clazz, i);
-                    break;
-                }
+            if(findFreeStack(clazz) != 99) {
+                currentItemstack = findFreeStack(clazz);
             }
         }
-        }
-    }
-
-    public ItemStack getStackForItem(Class clazz) {
-        return itemStacks[map.get(clazz)];
     }
 
     public boolean containsInInventory(Class clazz) {
-        if(map.get(clazz) == null) {
-            return false;
-        }else{
-            return true;
+        for(ItemStack itemStack : itemStacks) {
+            if(itemStack == null) {
+                continue;
+            }
+            if(itemStack.getItemClass().equals(clazz)) {
+                return true;
+            }
         }
+        return false;
     }
+
+    private List<ItemStack> getItemStacksFromClass(Class clazz) {
+        List<ItemStack> itemStacks = new ArrayList<>();
+
+        for(ItemStack itemStack : this.itemStacks) {
+            if(itemStack == null) {
+                continue;
+            }
+
+            if(itemStack.getItemClass().equals(clazz)) {
+                itemStacks.add(itemStack);
+            }
+        }
+
+        return itemStacks;
+    }
+
     public void addItem(Class clazz) {
-        logger.info(clazz.getName());
-        if(!map.containsKey(clazz)) {
-            int indexFree = findFreeStack();
+        int freeStack = findFreeStack(clazz);
 
-            if (indexFree == 99) {
+        int nullStack = findNullStack();
+
+        if(freeStack == 99) {
+            if(nullStack == 99) {
                 return;
-            } else {
-                map.put(clazz, indexFree);
-                itemStacks[indexFree] = new ItemStack(clazz);
-                itemStacks[indexFree].addToSTack();
+            }else{
+                itemStacks[nullStack] = new ItemStack(clazz);
+                HUDRenderer.addItemToRender(itemStacks[nullStack], nullStack);
+                itemStacks[nullStack].addToSTack();
 
-                HUDRenderer.addItemToRender(itemStacks[indexFree], indexFree);
-            }
-        }else{
-            int index = map.get(clazz);
-            if(itemStacks[index].getSize() != 99) {
-                itemStacks[index].addToSTack();
-            } else {
-                int indexFree = findFreeStack();
-
-                if (indexFree == 99) {
-                    return;
-                } else {
-                    itemStacks[indexFree] = new ItemStack(clazz);
-                    itemStacks[indexFree].addToSTack();
-                    map.remove(clazz);
-                    map.put(clazz, indexFree);
-                    HUDRenderer.addItemToRender(itemStacks[indexFree], indexFree);
+                if(Game.player.getCurrentBullet() == null)  {
+                    Game.player.setCurrentBullet(clazz);
                 }
+                return;
             }
         }
+
+        itemStacks[freeStack].addToSTack();
     }
 
-    private int findFreeStack() {
+    private int findNullStack() {
         for(int i = 0; i < itemStacks.length; i++) {
             if(itemStacks[i] == null) {
                 return i;
             }
         }
         return 99;
+    }
+
+    private int findFreeStack(Class clazz) {
+        for(int i = 0; i < itemStacks.length; i++) {
+            if(itemStacks[i] == null) {
+                continue;
+            }
+
+            if(itemStacks[i].getSize() != 99 && itemStacks[i].getItemClass().equals(clazz)) {
+                return i;
+            }
+        }
+
+        return 99;
+    }
+
+    public ItemStack getItemStack(int key) {
+        return this.itemStacks[key];
     }
 
     public int getCurrentItemstack() {
@@ -119,4 +121,5 @@ public class Inventory {
     public void setCurrentItemstack(int currentItemstack) {
         this.currentItemstack = currentItemstack;
     }
+
 }

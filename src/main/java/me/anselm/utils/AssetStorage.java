@@ -19,6 +19,9 @@ public class AssetStorage {
         textureHashMap.put("dirt", new Texture("tiles/dirt"));
         textureHashMap.put("itemContainer".toLowerCase(), new Texture("HUD/ItemContainer"));
         textureHashMap.put("zombie", new Texture("enemy/zombie"));
+        textureHashMap.put("shovel", new Texture("tiles/shovel"));
+        textureHashMap.put("arrow", new Texture("util/arrow"));
+        textureHashMap.put("arrowup", new Texture("util/arrowup"));
     }
 
     public static void addToHashmap(String key, Texture texture) {

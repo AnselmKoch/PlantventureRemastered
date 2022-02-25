@@ -21,6 +21,8 @@ public class Plantventure {
 
     private static boolean running;
 
+    public static int ups;
+
     public void run() {
         logger.info("Starting game...");
         logger.info("LWJGL: " + Version.getVersion() + "!");
@@ -57,6 +59,7 @@ public class Plantventure {
             frames++;
             if (System.currentTimeMillis() - timer > 1000) {
                 timer += 1000;
+                Window.ups = updates;
                 Window.fps = frames;
                 logger.info(updates + " ups, " + frames + " fps");
                 updates = 0;

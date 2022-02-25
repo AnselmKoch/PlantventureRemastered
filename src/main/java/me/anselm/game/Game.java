@@ -1,5 +1,6 @@
 package me.anselm.game;
 
+import me.anselm.game.entities.enemies.Enemy;
 import me.anselm.game.entities.player.Player;
 import me.anselm.game.entities.player.items.Bullet;
 import me.anselm.game.physics.CollitionDetector;
@@ -52,6 +53,7 @@ public class Game {
         player.calculateCurrentTile();
         player.tick();
 
+        levelManager.getCurrentLevel().tick();
 
         for(int i = 0; i < Game.player.getBullets().size(); i++) {
             Bullet bullet = Game.player.getBullets().get(i);
@@ -62,21 +64,7 @@ public class Game {
             return;
         }
 
-        if(Level.enemy == null) {
-           return;
-        }
 
-        Level.enemy.tick();
-
-        for(int i = 0; i < Game.player.getBullets().size(); i++) {
-            Bullet bullet = Game.player.getBullets().get(i);
-
-            if(CollitionDetector.colides(bullet, Level.enemy)) {
-                EntityRenderer.getRenderMesh().removeRenderable(bullet);
-                Game.player.getBullets().remove(i);
-                Level.enemy.onDamage();
-            }
-        }
     }
 
     private static void movePlayer() {

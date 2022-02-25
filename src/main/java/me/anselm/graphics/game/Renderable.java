@@ -8,9 +8,6 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.slf4j.Logger;
 
-import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
-
 public abstract class Renderable {
     private static final Logger logger = LoggerUtils.getLogger(Renderable.class);
 

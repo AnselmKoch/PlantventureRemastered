@@ -72,7 +72,7 @@ public class Window {
     public static Matrix4f perspective;
     public static Matrix4f view = new Matrix4f().identity();
 
-    public static int fps;
+    public static int fps, ups;
 
     public static void render() {
 
@@ -101,11 +101,10 @@ public class Window {
 
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
         glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
-        glfwWindowHint(GLFW_MAXIMIZED,GLFW_TRUE);
 
-        Window.WIDTH = 1920;
-        Window.HEIGHT = 1000;
-        window = glfwCreateWindow(WIDTH,HEIGHT, "Plantventure v0.01", NULL, NULL);
+        Window.WIDTH = 1920 / 3;
+        Window.HEIGHT = 1000 / 3;
+        window = glfwCreateWindow(WIDTH,HEIGHT, "v0.01", NULL, NULL);
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
         if (window == NULL) {
@@ -139,7 +138,7 @@ public class Window {
 
         logger.info("OpenGL: " + glGetString(GL_VERSION) + "...");
 
-        glViewport(0,0,1980,1020);
+        glViewport(0,0,1980 / 3,1020 / 3);
     }
 
 

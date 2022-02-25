@@ -10,14 +10,34 @@ import me.anselm.utils.Position;
 import org.joml.Vector3f;
 
 public class DirtTile extends Tile {
+
     public DirtTile(Vector3f position, float width, float height, float size, Position center) {
         super(position, width, height, size, AssetStorage.getTexture("dirt"), center);
 
-        this.setLootTable(new LootTable(StoneBullet.class, 50, 8));
+        this.setLootTable(new LootTable(StoneBullet.class, 30, 5));
+    }
+
+    @Override
+    public void setInteractable(boolean interactable) {
+        this.setLooted(interactable);
+    }
+
+    @Override
+    public boolean isInteractable() {
+        return this.isLooted();
     }
 
     @Override
     public void onInteract(Player player) {
+
+        if(!this.isInteractable()) {
+            HUDRenderer.drawInformation(100, "already looted");
+            return;
+        }
+
+
+        this.setInteractable(false);
+
         int lootedAmount = this.getLootTable().loot();
         Class lootItem = this.getLootTable().getItem();
 

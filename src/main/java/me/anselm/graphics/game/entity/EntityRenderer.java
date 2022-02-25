@@ -20,7 +20,6 @@ public class EntityRenderer {
     public static void render() {
         logger.info("Rendering entities...");
 
-        Level.enemy.onRender();
         renderMesh.render();
     }
 

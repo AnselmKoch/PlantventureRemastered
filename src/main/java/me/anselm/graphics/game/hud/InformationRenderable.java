@@ -12,6 +12,11 @@ public class InformationRenderable{
     private int maxFrames;
     private int currentFrame;
 
+    public InformationRenderable(String text, int maxFrames) {
+        this.text = text;
+        this.maxFrames = maxFrames;
+    }
+
     public InformationRenderable(ItemIcon itemIcon, int maxFrames) {
         this.itemIcon = itemIcon;
         this.text = "+" + counter;

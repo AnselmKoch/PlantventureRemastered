@@ -148,7 +148,13 @@ public class RenderMesh {
     public void clear() {
         this.renderables.clear();
         this.amount = 0;
-        this.vertices = new float[meshSize * VERTEX_SIZE];
+
+        freeSlots.clear();
+        for(int i = 0; i < meshSize; i++) {
+            freeSlots.add(String.valueOf(i));
+        }
+
+        this.vertices = new float[meshSize * 4 * VERTEX_SIZE];
     }
 
     public void removeRenderable(Renderable renderable) {
@@ -178,7 +184,6 @@ public class RenderMesh {
         }
 
         int index = amount;
-        amount++;
 
         renderables.put(renderable, new MeshProperty(renderable, index));
 
@@ -187,6 +192,7 @@ public class RenderMesh {
         }
         loadVertexProperties(renderables.get(renderable));
         freeSlots.remove(String.valueOf(renderables.get(renderable).getIndex()));
+        amount++;
     }
 
 
