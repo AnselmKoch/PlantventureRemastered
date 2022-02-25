@@ -17,8 +17,10 @@ import sun.java2d.pipe.TextRenderer;
 
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR;
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_NORMAL;
+import static org.lwjgl.glfw.GLFW.GLFW_MAXIMIZED;
 import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
 import static org.lwjgl.glfw.GLFW.GLFW_TRUE;
+import static org.lwjgl.glfw.GLFW.GLFW_VISIBLE;
 import static org.lwjgl.glfw.GLFW.glfwCreateWindow;
 import static org.lwjgl.glfw.GLFW.glfwDefaultWindowHints;
 import static org.lwjgl.glfw.GLFW.glfwGetPrimaryMonitor;
@@ -39,6 +41,7 @@ import static org.lwjgl.glfw.GLFW.glfwWindowHint;
 import static org.lwjgl.opengl.GL11.GL_BLEND;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
 import static org.lwjgl.opengl.GL11.GL_LEQUAL;
 import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
@@ -95,8 +98,14 @@ public class Window {
             logger.info("Could not initialize GLFW");
         }
         glfwDefaultWindowHints();
+
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-        window = glfwCreateWindow(1920,1080, "Plantventure v0.01", NULL, NULL);
+        glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
+        glfwWindowHint(GLFW_MAXIMIZED,GLFW_TRUE);
+
+        Window.WIDTH = 1920;
+        Window.HEIGHT = 1000;
+        window = glfwCreateWindow(WIDTH,HEIGHT, "Plantventure v0.01", NULL, NULL);
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
         if (window == NULL) {
@@ -104,30 +113,33 @@ public class Window {
             return;
         }
 
+        glfwSetKeyCallback(window, Input.getKeyCallback());
+        glfwSetMouseButtonCallback(window, Input.getClickCallBack());
+
+        glfwMakeContextCurrent(window);
+        glfwSwapInterval(1);
+        glfwShowWindow(window);
+
+        GL.createCapabilities();
+
+        glfwSetWindowSizeCallback(window, ResizeCallback::resizeCallback);
+        glClearDepth(1.0f);
+
         glfwGetVideoMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
         TARGETHEIGHT = glfwGetVideoMode.height();
         TARGETWITDTH = glfwGetVideoMode.width();
         aspectRatio = (float)TARGETWITDTH/ (float)TARGETHEIGHT;
         targetAspectRatio = aspectRatio;
 
-        glfwMakeContextCurrent(window);
-        GL.createCapabilities();
 
-        glfwSwapInterval(0);
-        glClearDepth(1.0f);
-        //glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
         glActiveTexture(GL_TEXTURE1);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
         logger.info("OpenGL: " + glGetString(GL_VERSION) + "...");
-        glfwShowWindow(window);
 
-        glfwSetKeyCallback(window, Input.getKeyCallback());
-        glfwSetMouseButtonCallback(window, Input.getClickCallBack());
-
-        glfwSetWindowSizeCallback(window, ResizeCallback::resizeCallback);
-        ResizeCallback.resizeCallback(window, TARGETWITDTH, TARGETHEIGHT);
+        glViewport(0,0,1980,1020);
     }
 
 

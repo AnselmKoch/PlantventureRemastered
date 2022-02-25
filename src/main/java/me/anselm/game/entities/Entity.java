@@ -10,6 +10,9 @@ public abstract class Entity extends Renderable {
 
 
     private Vector2f momentum;
+
+    private float damage, speed, shotspeed, cooldown;
+
     private float damageFrame;
 
     public Entity(Vector3f position, float width, float height, float size, Texture texture, Position center) {
@@ -39,5 +42,37 @@ public abstract class Entity extends Renderable {
 
     public void setDamageFrame(float damageFrame) {
         this.damageFrame = damageFrame;
+    }
+
+    public float getDamage() {
+        return damage;
+    }
+
+    public void setDamage(float damage) {
+        this.damage = damage;
+    }
+
+    public float getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(float speed) {
+        this.speed = speed;
+    }
+
+    public float getShotspeed() {
+        return shotspeed;
+    }
+
+    public void setShotspeed(float shotspeed) {
+        this.shotspeed = shotspeed;
+    }
+
+    public float getCooldown() {
+        return cooldown;
+    }
+
+    public void setCooldown(float cooldown) {
+        this.cooldown = cooldown;
     }
 }

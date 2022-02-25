@@ -1,11 +1,11 @@
 package me.anselm.graphics.game.font;
 
-import me.anselm.graphics.mesh.RenderMesh;
+import me.anselm.graphics.shaders.mesh.RenderMesh;
 import me.anselm.graphics.shaders.Shader;
 
 public class FontMesh extends RenderMesh {
-    public FontMesh(Shader shader) {
-        super(shader);
+    public FontMesh(Shader shader, int size) {
+        super(shader, size);
     }
 
     public void flush() {

@@ -9,6 +9,10 @@ import static org.lwjgl.opengl.GL11.glViewport;
 public class ResizeCallback {
 
     public static void resizeCallback(long glfwWindow, int screenWidth, int screenHeight) {
+        calculateViewPort(screenWidth, screenHeight);
+    }
+
+    public static void calculateViewPort(int screenWidth, int screenHeight) {
         Window.WIDTH = screenWidth;
         Window.HEIGHT = screenHeight;
 
@@ -27,5 +31,4 @@ public class ResizeCallback {
 
         glViewport(vpX, vpY, aspectWidth, aspectHeight);
     }
-
 }

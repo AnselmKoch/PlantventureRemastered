@@ -45,7 +45,58 @@ public class TextFont {
         }
     }
 
-    public void drawText(String text, Vector3f position, float width, float height) {
+    public void drawTextCentered(String text, Vector3f position, float width, float height, Vector4f color) {
+        RenderChar[] renderChars = new RenderChar[text.length()];
+
+        float totalWidth = 0.0f;
+        for(int i = 0; i < text.length(); i++) {
+
+            if(text.charAt(i) == ' ') {
+                continue;
+            }
+
+            Glyph glyph = glyphMap.get(text.charAt(i));
+            float charWidth = glyph.width / width;
+            totalWidth += charWidth;
+        }
+        float currX = position.x - (totalWidth / 2f), currY = position.y;
+        for(int i = 0; i < text.length(); i++) {
+            char c = text.charAt(i);
+            if (c == ' ') {
+                continue;
+            }
+
+
+            Glyph glyph = glyphMap.get(c);
+
+            float xTex = glyph.x * fontAspecRatio, yTex = glyph.y * fontAspecRatio;
+            float yHeight = glyph.height * fontAspecRatio,xWidth = glyph.width * fontAspecRatio;
+            Vector2f[] texCords = new Vector2f[]{
+                    new Vector2f(xTex + xWidth, yTex),
+                    new Vector2f(xTex + xWidth, yTex + yHeight),
+                    new Vector2f(xTex, yTex + yHeight),
+                    new Vector2f(xTex, yTex),
+
+            };
+
+            float charWidth = glyph.width / width;
+            float charHeight = glyph.height / height;
+            float charXOffset = glyph.xOffset / width;
+            float charYOffset = glyph.yOffset / height;
+
+            float widthTotal = 0f;
+            RenderChar renderChar = new RenderChar(c,
+                    new Vector3f(currX + charXOffset, currY- charYOffset - charHeight, 1.0f),
+                    texCords, charWidth, charHeight + charYOffset, 1.0f, fontTexture, Position.BOTTOMLEFT, color);
+
+            renderChars[i] = renderChar;
+
+            currX += charWidth + charXOffset;
+        }
+        FontRenderer.addText(renderChars);
+    }
+
+    public void drawText(String text, Vector3f position, float width, float height, Vector4f color) {
         RenderChar[] renderChars = new RenderChar[text.length()];
 
         float currX = position.x, currY = position.y;
@@ -75,8 +126,8 @@ public class TextFont {
 
 
            RenderChar renderChar = new RenderChar(c,
-                   new Vector3f(currX, currY + charYOffset, 1.0f),
-                   texCords, charWidth - charXOffset, charHeight - charYOffset, 1.0f, fontTexture, Position.BOTTOMLEFT);
+                   new Vector3f(currX, currY- charYOffset - charHeight, 1.0f),
+                   texCords, charWidth + charXOffset, charHeight + charYOffset, 1.0f, fontTexture, Position.BOTTOMLEFT, color);
 
            renderChars[i] = renderChar;
 

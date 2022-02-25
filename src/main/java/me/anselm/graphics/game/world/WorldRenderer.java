@@ -3,7 +3,7 @@ package me.anselm.graphics.game.world;
 import me.anselm.game.Game;
 import me.anselm.game.world.Level;
 import me.anselm.game.world.tiles.Tile;
-import me.anselm.graphics.mesh.RenderMesh;
+import me.anselm.graphics.shaders.mesh.RenderMesh;
 import me.anselm.graphics.shaders.Shader;
 import me.anselm.utils.LoggerUtils;
 import org.joml.Matrix4f;
@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import static org.lwjgl.opengl.GL11.GL_LINE_STRIP;
 import static org.lwjgl.opengl.GL11.glBegin;
 import static org.lwjgl.opengl.GL11.glClipPlane;
+import static org.lwjgl.opengl.GL11.glColor4f;
 import static org.lwjgl.opengl.GL11.glEnd;
 import static org.lwjgl.opengl.GL11.glIndexPointer;
 import static org.lwjgl.opengl.GL11.glLineWidth;
@@ -33,15 +34,11 @@ public class WorldRenderer {
         }
 
         logger.info("Rendering world...");
-        Shader.TILE.enable();
-        Level.grassTex.bind();
-        glActiveTexture(GL_TEXTURE1);
-        Shader.TILE.setUniform1i("tex_sample", 1);
+
         Shader.TILE.setUniformBool("drawText", true);
 
 
-          renderMesh.render();
-
+        renderMesh.render();
 
        Shader.TILE.setUniformBool("drawText", false);
 
@@ -49,21 +46,21 @@ public class WorldRenderer {
             Tile tile = Game.player.currentTile;
             glLineWidth(3.0f);
             glBegin(GL_LINE_STRIP);
-            glVertex3f(tile.getPosition().x  , tile.getPosition().y  , 2.0f);
-            glVertex3f((tile.getPosition().x)   , (tile.getPosition().y + tile.height) , 2.0f);
-            glVertex3f((tile.getPosition().x + tile.width)  , (tile.getPosition().y +  tile.height), 2.0f);
-            glVertex3f((tile.getPosition().x + tile.width)   , (tile.getPosition().y), 2.0f);
-            glVertex3f(tile.getPosition().x  , tile.getPosition().y  , 2.0f);
+            glVertex3f(tile.getPosition().x, tile.getPosition().y, 2.0f);
+            glVertex3f((tile.getPosition().x), (tile.getPosition().y + tile.height), 2.0f);
+            glVertex3f((tile.getPosition().x + tile.width), (tile.getPosition().y + tile.height), 2.0f);
+            glVertex3f((tile.getPosition().x + tile.width), (tile.getPosition().y), 2.0f);
+            glVertex3f(tile.getPosition().x, tile.getPosition().y, 2.0f);
             glEnd();
         }
-        Level.grassTex.unbind();
         Shader.TILE.disable();
+
     }
 
 
     public static void init() {
         logger.info("Initializing...");
-        renderMesh = new RenderMesh(Shader.TILE);
+        renderMesh = new RenderMesh(Shader.TILE, 500);
     }
 
     public static RenderMesh getRenderMesh() {

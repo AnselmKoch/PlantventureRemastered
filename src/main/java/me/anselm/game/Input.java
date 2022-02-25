@@ -24,6 +24,10 @@ public class Input {
         public void invoke(long window, int button, int action, int mods) {
             if (action == GLFW.GLFW_PRESS) {
 
+                if(Game.mousePos == null) {
+                    return;
+                }
+
                 Vector3f world = new Matrix4f(Window.view).mul(Window.perspective).unproject(Game.mousePos.x, Game.mousePos.y, 0.0f,
                         new int[]{0, 0, Window.TARGETWITDTH, Window.TARGETHEIGHT}, new Vector3f());
 
@@ -36,14 +40,22 @@ public class Input {
     private static GLFWKeyCallback keyCallback = new GLFWKeyCallback() {
 
         //W = 87 A = 65 S=83 D=68
+        //1 = 49, 2 = 50, 3 = 51, 4 =52, 5=53
         @Override
         public void invoke(long window, int key, int scancode, int action, int mods) {
             if(action == GLFW.GLFW_PRESS) {
+                logger.info("KEY: " + key);
                 switch (key) {
+                    case 49: Game.player.switchBullet(0); break;
+                    case 50: Game.player.switchBullet(1); break;
+                    case 51: Game.player.switchBullet(2); break;
+                    case 52: Game.player.switchBullet(3); break;
+                    case 53: Game.player.switchBullet(4); break;
                     case 87: pressedKeys[0] = true; break;
                     case 65: pressedKeys[1] = true;break;
                     case 83: pressedKeys[2] = true; break;
                     case 68: pressedKeys[3] = true;break;
+                    case 69: Game.player.interact(Game.player.currentTile); break;
                 }
             }
             if(action == GLFW.GLFW_RELEASE) {

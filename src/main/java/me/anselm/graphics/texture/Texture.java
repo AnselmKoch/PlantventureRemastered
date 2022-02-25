@@ -1,5 +1,6 @@
 package me.anselm.graphics.texture;
 
+import me.anselm.utils.AssetStorage;
 import me.anselm.utils.FileUtils;
 import me.anselm.utils.LoggerUtils;
 import me.anselm.utils.buffer.BufferUtils;
@@ -22,7 +23,6 @@ import static org.lwjgl.opengl.GL11.glBindTexture;
 import static org.lwjgl.opengl.GL11.glGenTextures;
 import static org.lwjgl.opengl.GL11.glTexImage2D;
 import static org.lwjgl.opengl.GL11.glTexParameteri;
-import static org.lwjgl.stb.STBImage.stbi_set_flip_vertically_on_load;
 
 public class Texture {
     private static final Logger logger = LoggerUtils.getLogger(Texture.class);
@@ -30,6 +30,7 @@ public class Texture {
 
     public Texture(String name) {
         this.texture = load(FileUtils.resourcePath + "textures/" + name + ".png");
+        AssetStorage.addToHashmap(name, this);
     }
 
     private int load(String path) {

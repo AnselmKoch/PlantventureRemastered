@@ -3,6 +3,7 @@ import me.anselm.graphics.game.entity.EntityRenderer;
 import me.anselm.graphics.game.font.FontRenderer;
 import me.anselm.graphics.game.hud.HUDRenderer;
 import me.anselm.graphics.game.world.WorldRenderer;
+import me.anselm.utils.AssetStorage;
 import org.slf4j.Logger;
 import me.anselm.graphics.Window;
 import me.anselm.graphics.shaders.Shader;
@@ -28,6 +29,7 @@ public class Plantventure {
 
         Window.init();
         Shader.init();
+        AssetStorage.init();
         WorldRenderer.init();
         HUDRenderer.init();
         EntityRenderer.init();

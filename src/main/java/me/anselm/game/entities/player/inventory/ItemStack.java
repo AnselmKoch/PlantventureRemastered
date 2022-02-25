@@ -6,18 +6,16 @@ import java.util.Stack;
 
 public class ItemStack {
 
-    private Item item;
-    private Stack<Item> stack;
+    private final Class itemClass;
     private int size;
 
-    public ItemStack(Item item) {
-        this.item = item;
-        this.stack = new Stack<>();
+    public ItemStack(Class itemClass) {
+            this.itemClass = itemClass;
+            size = 0;
     }
 
-    public boolean addToSTack(Item item) {
-        if(stack.size() < 100) {
-            stack.push(item);
+    public boolean addToSTack() {
+        if(size < 100) {
             size++;
             return true;
         }else{
@@ -26,14 +24,10 @@ public class ItemStack {
     }
 
     public boolean removeFromStack() {
-        stack.pop();
         size--;
         return true;
     }
 
-    public Item getItem() {
-        return this.item;
-    }
 
     public int getSize() {
         return size;
@@ -41,5 +35,9 @@ public class ItemStack {
 
     public void setSize(int size) {
         this.size = size;
+    }
+
+    public Class getItemClass() {
+        return itemClass;
     }
 }

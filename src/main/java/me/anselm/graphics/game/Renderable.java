@@ -1,6 +1,5 @@
 package me.anselm.graphics.game;
 
-import me.anselm.graphics.Vao;
 import me.anselm.graphics.texture.Texture;
 import me.anselm.utils.LoggerUtils;
 import me.anselm.utils.Position;
@@ -15,7 +14,6 @@ import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
 public abstract class Renderable {
     private static final Logger logger = LoggerUtils.getLogger(Renderable.class);
 
-    protected Vao vao;
     private Vector3f position;
     public float width, height, size;
     private Vector4f color;
@@ -211,14 +209,6 @@ public abstract class Renderable {
         updateVertices();
     }
 
-    public Vao getVao() {
-        return vao;
-    }
-
-    public void setVao(Vao vao) {
-        this.vao = vao;
-    }
-
     public Vector3f getPosition() {
         return position;
     }
@@ -273,15 +263,6 @@ public abstract class Renderable {
 
     public Vector2f[] getTextureCords() {
         return this.texCoords;
-    }
-
-    public void destroyVAO() {
-        this.vao.vaoInfosBuffer.clear();
-        this.vao.indeceInfosBuffer.clear();
-        glDeleteBuffers(this.vao.getIndeces());
-        glDeleteBuffers(this.vao.getVboId());
-        glDeleteVertexArrays(this.vao.getVaoId());
-        this.vao = null;
     }
 
     public Vector3f[] getPositions() {

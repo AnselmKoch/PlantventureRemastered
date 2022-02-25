@@ -1,19 +1,18 @@
 package me.anselm.game;
 
 import me.anselm.game.entities.player.Player;
-import me.anselm.game.entities.player.items.BasicItem;
 import me.anselm.game.entities.player.items.Bullet;
 import me.anselm.game.physics.CollitionDetector;
 import me.anselm.game.world.Level;
 import me.anselm.game.world.LevelManager;
 import me.anselm.graphics.Window;
 import me.anselm.graphics.game.entity.EntityRenderer;
-import me.anselm.graphics.texture.Texture;
+import me.anselm.utils.AssetStorage;
 import me.anselm.utils.LoggerUtils;
 import me.anselm.utils.Position;
+import org.joml.Random;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
@@ -26,17 +25,19 @@ public class Game {
     public static Player player;
     public static LevelManager levelManager;
 
+    public static int seed;
+
     public static Vector2f mousePos;
 
     private static DoubleBuffer posX = BufferUtils.createDoubleBuffer(1), posY = BufferUtils.createDoubleBuffer(1);
     public static void init() {
         logger.info("Initializing game...");
-        player = new Player(new Vector3f(200f,100f,1.0f), 15,15,1.0f, new Texture("player"), Position.CENTER);
+
+        seed = new Random().nextInt(10000);
+
+        player = new Player(new Vector3f(200f,100f,1.0f), 15,15,1.0f, AssetStorage.getTexture("player"), Position.CENTER);
         EntityRenderer.getRenderMesh().addRenderable(player);
 
-        for(int i = 0; i <99; i++) {
-            player.getInventory().addItem(BasicItem.class, new BasicItem("Bullet", 0, Bullet.bulletTex));
-        }
 
         levelManager = new LevelManager();
     }

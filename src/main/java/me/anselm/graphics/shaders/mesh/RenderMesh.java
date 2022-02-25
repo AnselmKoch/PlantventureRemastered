@@ -1,20 +1,15 @@
-package me.anselm.graphics.mesh;
+package me.anselm.graphics.shaders.mesh;
 
 import me.anselm.graphics.Window;
 import me.anselm.graphics.game.Renderable;
 import me.anselm.graphics.shaders.Shader;
 import me.anselm.graphics.texture.Texture;
 import me.anselm.utils.LoggerUtils;
-import me.anselm.utils.buffer.BufferUtils;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 import org.slf4j.Logger;
 
-import java.nio.FloatBuffer;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +37,6 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 public class RenderMesh {
     private static final Logger logger = LoggerUtils.getLogger(RenderMesh.class);
 
-    private static final int meshSize = 2500;
     private static final int POS_SIZE = 3;
     private static final int TEX_COORDS_SIZE = 2;
     private static final int TEX_ID_SIZE = 1;
@@ -55,6 +49,7 @@ public class RenderMesh {
     private final int VERTEX_SIZE = 10;
     private final int VERTEX_SIZE_BYTES = VERTEX_SIZE * Float.BYTES;
 
+    private final int meshSize;
     private Shader shader;
     public int amount;
     public float[] vertices;
@@ -64,7 +59,8 @@ public class RenderMesh {
     public Map<Renderable, MeshProperty> renderables;
     private int vaoId, vboId;
 
-    public RenderMesh(Shader shader) {
+    public RenderMesh(Shader shader, int size) {
+        this.meshSize = size;
         this.shader = shader;
         this.renderables = new HashMap<>();
         this.vertices = new float[meshSize * 4 * VERTEX_SIZE];
@@ -185,10 +181,7 @@ public class RenderMesh {
         amount++;
 
         renderables.put(renderable, new MeshProperty(renderable, index));
-        if(this.shader == Shader.PLAYER) {
-            logger.info(renderables.get(renderable).getIndex() + "INDEX OF:");
 
-        }
         if(!textureList.contains(renderable.getTexture())) {
             textureList.add(renderable.getTexture());
         }

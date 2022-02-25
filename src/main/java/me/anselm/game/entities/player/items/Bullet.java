@@ -16,8 +16,6 @@ import org.slf4j.Logger;
 public class Bullet extends Entity {
     private static final Logger logger = LoggerUtils.getLogger(Bullet.class);
 
-    public static Texture bulletTex = new Texture("player/bullets/basicBullet");
-
 
     public Bullet(Vector3f position, float width, float height, float size, Texture texture, Position orientation) {
         super(position, width, height, size, texture, orientation);

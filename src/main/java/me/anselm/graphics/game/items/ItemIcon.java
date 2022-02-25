@@ -16,6 +16,11 @@ public class ItemIcon extends Renderable {
         this.itemStack = item;
     }
 
+
+    public ItemIcon( Vector3f position, float width, float height, float size, Texture texture, Position orientation) {
+        super(position, width, height, size, texture, orientation);
+    }
+
     public ItemStack getItemStack() {
         return itemStack;
     }

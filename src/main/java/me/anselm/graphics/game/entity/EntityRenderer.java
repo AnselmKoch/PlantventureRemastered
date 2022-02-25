@@ -3,16 +3,11 @@ package me.anselm.graphics.game.entity;
 import me.anselm.game.Game;
 import me.anselm.game.entities.enemies.Enemy;
 import me.anselm.game.entities.player.Player;
-import me.anselm.game.entities.player.items.Bullet;
 import me.anselm.game.world.Level;
-import me.anselm.graphics.mesh.RenderMesh;
+import me.anselm.graphics.shaders.mesh.RenderMesh;
 import me.anselm.graphics.shaders.Shader;
 import me.anselm.utils.LoggerUtils;
 import org.slf4j.Logger;
-
-import static org.lwjgl.opengl.GL13.GL_TEXTURE1;
-import static org.lwjgl.opengl.GL13.GL_TEXTURE2;
-import static org.lwjgl.opengl.GL13.glActiveTexture;
 
 public class EntityRenderer {
 
@@ -31,7 +26,7 @@ public class EntityRenderer {
 
     public static void init() {
         logger.info("Initializing EntityRenderer...");
-        renderMesh = new RenderMesh(Shader.PLAYER);
+        renderMesh = new RenderMesh(Shader.PLAYER, 100);
     }
 
     public static RenderMesh getRenderMesh() {
