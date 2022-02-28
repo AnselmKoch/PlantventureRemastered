@@ -10,9 +10,11 @@ import me.anselm.game.entities.player.items.Item;
 import me.anselm.game.world.Interactable;
 import me.anselm.game.world.Level;
 import me.anselm.game.world.LevelManager;
+import me.anselm.game.world.hints.PlayerHeart;
 import me.anselm.game.world.tiles.Tile;
 import me.anselm.graphics.Window;
 import me.anselm.graphics.game.entity.EntityRenderer;
+import me.anselm.graphics.game.hud.HUDRenderer;
 import me.anselm.graphics.game.world.WorldRenderer;
 import me.anselm.graphics.texture.Texture;
 import me.anselm.utils.AssetStorage;
@@ -34,15 +36,15 @@ public class Player extends Entity {
     private Class currentBullet;
     private int currentTileY, currentTileX;
     private Item currentBulletInstance;
-
     private float currentCooldown = 0.0f;
 
     private static final float cooldownPerTick = 1.0f / 60.0f;
 
-    public Player(Vector3f position, float width, float height, float size, Texture texture, Position center) {
-        super(position, width, height, size, texture, center);
+    public Player(Vector3f position) {
+        super(position, 15.0f, 15gi.0f, 1.0f, AssetStorage.getTexture("player"), Position.CENTER, true);
         bullets = new ArrayList<>();
         this.inventory = new Inventory();
+        this.setHealth(MAX_HEALTH);
 
         this.setCooldown(0.1f);
         this.setDamage(1.0f);
@@ -103,8 +105,8 @@ public class Player extends Entity {
 
 
 
-        Bullet bullet = new Bullet(new Vector3f().set(this.getPosition()), 5.0f,5.0f,1.0f,currentBulletInstance.getTexture(),Position.CENTER);
-        bullet.setMomentum(momentum.mul(this.getShotspeed()));
+        Bullet bullet = new Bullet(new Vector3f().set(this.getPosition()), 5.0f,5.0f,1.0f,currentBulletInstance.getTexture(),Position.CENTER, false);
+        bullet.setMomentumTotal(momentum.mul(this.getShotspeed()));
         bullets.add(bullet);
         EntityRenderer.getRenderMesh().addRenderable(bullet);
         this.getInventory().removeItem(currentBullet);
@@ -126,7 +128,6 @@ public class Player extends Entity {
     @Override
     public void move(Vector2f momentum) {
         this.addToPosition(momentum.mul(this.getSpeed()));
-        EntityRenderer.getRenderMesh().changeRenderable(this);
 
         if(this.getPosition().x > Window.WORLDWITH) {
             Game.levelManager.switchLevel(LevelManager.levelIndex.add(Level.tilesX,0));
@@ -147,19 +148,35 @@ public class Player extends Entity {
         this.setPosition(new Vector3f(200,100,1.0f));
         EntityRenderer.getRenderMesh().changeRenderable(this);
      }
+
     @Override
     public void tick() {
-        if(this.getCooldown() == 0.0f) {
+
+        this.doDamageColor();
+
+        if (this.getCooldown() == 0.0f) {
             return;
         }
 
-        if(this.getCooldown() >= 0.0f) {
+        if (this.getCooldown() >= 0.0f) {
             this.currentCooldown -= cooldownPerTick;
+        }
+
+        EntityRenderer.getRenderMesh().changeRenderable(this);
+
+        if(!this.isInvincible()) {
+            return;
+        }
+        this.setCrtInvincTime(this.getCrtInvincTime() + 1);
+
+        if(this.getCrtInvincTime() >= this.getInvincTime()) {
+            this.setInvincible(false);
+            this.setCrtInvincTime(0);
         }
     }
 
     @Override
-    public void onDamage() {
+    public void die() {
 
     }
 
@@ -179,4 +196,5 @@ public class Player extends Entity {
         this.currentBullet =currentBullet;
         this.currentBulletInstance = Item.createInstanceFromItem(currentBullet);
     }
+
 }

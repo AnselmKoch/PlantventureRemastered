@@ -111,12 +111,15 @@ public class RenderMesh {
         shader.setUniformMat4f("uPersp", Window.perspective);
         shader.setUniformMat4f("uModel", Window.view);
 
-        for(int i = 0; i < textureList.size(); i++) {
-            glActiveTexture(GL_TEXTURE0 + i + 1);
-            textureList.get(i).bind();
+        if(!textureList.isEmpty()) {
+            for (int i = 0; i < textureList.size(); i++) {
+                glActiveTexture(GL_TEXTURE0 + i + 1);
+                textureList.get(i).bind();
+            }
+
+            shader.setIntArray("tex_sample", textureSlots);
         }
 
-        shader.setIntArray("tex_sample", textureSlots);
 
         glBindVertexArray(vaoId);
 
@@ -174,6 +177,7 @@ public class RenderMesh {
             }
             loadVertexProperties(meshProperty1);
         }
+
         amount--;
     }
 
@@ -187,9 +191,12 @@ public class RenderMesh {
 
         renderables.put(renderable, new MeshProperty(renderable, index));
 
-        if(!textureList.contains(renderable.getTexture())) {
-            textureList.add(renderable.getTexture());
+        if(renderable.getTexture() != null) {
+            if (!textureList.contains(renderable.getTexture())) {
+                textureList.add(renderable.getTexture());
+            }
         }
+
         loadVertexProperties(renderables.get(renderable));
         freeSlots.remove(String.valueOf(renderables.get(renderable).getIndex()));
         amount++;
@@ -204,11 +211,11 @@ public class RenderMesh {
         Vector2f[] texCoords = renderable.getTextureCords();
 
         int texId = 0;
-        for(int i = 0; i < textureList.size(); i++) {
-            if(textureList.get(i) == renderable.getTexture()) {
-                texId = i+1;
-                break;
-            }
+            for (int i = 0; i < textureList.size(); i++) {
+                if (textureList.get(i) == renderable.getTexture()) {
+                    texId = i + 1;
+                    break;
+                }
         }
 
         Vector3f[] corners = renderable.getPositions();

@@ -1,19 +1,28 @@
 package me.anselm.graphics;
 
+import me.anselm.game.Game;
 import me.anselm.game.Input;
 import me.anselm.graphics.game.entity.EntityRenderer;
 import me.anselm.graphics.game.font.FontRenderer;
 import me.anselm.graphics.game.hud.HUDRenderer;
 import me.anselm.graphics.game.world.WorldRenderer;
+import me.anselm.graphics.menu.MenuRenderer;
 import me.anselm.graphics.shaders.Shader;
+import me.anselm.menu.MenuManagar;
 import me.anselm.utils.ResizeCallback;
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import me.anselm.utils.LoggerUtils;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import sun.font.TextRecord;
 import sun.java2d.pipe.TextRenderer;
+
+import java.nio.DoubleBuffer;
 
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR;
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_NORMAL;
@@ -38,11 +47,15 @@ import static org.lwjgl.glfw.GLFW.glfwShowWindow;
 import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
 import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
 import static org.lwjgl.glfw.GLFW.glfwWindowHint;
+import static org.lwjgl.opengl.GL11.GL_BACK;
 import static org.lwjgl.opengl.GL11.GL_BLEND;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
+import static org.lwjgl.opengl.GL11.GL_FRONT_AND_BACK;
+import static org.lwjgl.opengl.GL11.GL_FRONT_FACE;
 import static org.lwjgl.opengl.GL11.GL_LEQUAL;
+import static org.lwjgl.opengl.GL11.GL_LINE;
 import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_VERSION;
@@ -52,6 +65,7 @@ import static org.lwjgl.opengl.GL11.glClearDepth;
 import static org.lwjgl.opengl.GL11.glDepthFunc;
 import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.opengl.GL11.glGetString;
+import static org.lwjgl.opengl.GL11.glPolygonMode;
 import static org.lwjgl.opengl.GL11.glViewport;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE1;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
@@ -72,7 +86,11 @@ public class Window {
     public static Matrix4f perspective;
     public static Matrix4f view = new Matrix4f().identity();
 
+
     public static int fps, ups;
+
+    public static Vector2f mousePos;
+    private static DoubleBuffer posX = BufferUtils.createDoubleBuffer(1), posY = BufferUtils.createDoubleBuffer(1);
 
     public static void render() {
 
@@ -82,9 +100,14 @@ public class Window {
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
-        WorldRenderer.render();
-        EntityRenderer.render();
-        HUDRenderer.render();
+        if(Game.rendering ) {
+            WorldRenderer.render();
+            EntityRenderer.render();
+            HUDRenderer.render();
+        } else {
+            MenuRenderer.render();
+        }
+
         FontRenderer.render();
 
         glfwSwapBuffers(window);
@@ -141,5 +164,30 @@ public class Window {
         glViewport(0,0,1980 / 3,1020 / 3);
     }
 
+
+    public static void handleMouse() {
+        GLFW.glfwGetCursorPos(Window.window, posX,posY);
+        mousePos = new Vector2f((float)posX.get(0), Window.HEIGHT - (float)posY.get(0));
+
+        if(!Game.ticking) {
+
+            Vector3f world = new Matrix4f(Window.view).mul(Window.perspective).unproject(Window.mousePos.x, Window.mousePos.y, 0.0f,
+                    new int[]{0, 0, Window.TARGETWITDTH, Window.TARGETHEIGHT}, new Vector3f());
+
+            MenuManagar.handleMouse(world);
+        }
+    }
+
+    public static void handleMouseClick() {
+
+        Vector3f world = new Matrix4f(Window.view).mul(Window.perspective).unproject(Window.mousePos.x, Window.mousePos.y, 0.0f,
+                new int[]{0, 0, Window.TARGETWITDTH, Window.TARGETHEIGHT}, new Vector3f());
+        if(Game.ticking) {
+            world.sub(Game.player.getPosition()).normalize();
+            Game.player.shoot(new Vector2f(world.x, world.y));
+        }else {
+            MenuManagar.handleMouseClick();
+        }
+    }
 
 }

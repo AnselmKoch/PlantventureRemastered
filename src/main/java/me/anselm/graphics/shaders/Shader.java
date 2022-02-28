@@ -32,7 +32,7 @@ public class Shader {
     public static final int TEXID_ATTRIB = 2;
     public static final int COLOR_ATTRIB = 3;
 
-    public static Shader TILE, PLAYER, STANDART, BULLET;
+    public static Shader TILE, PLAYER, STANDART, BULLET, MENU;
 
     private static FloatBuffer matrice4x4Buffer =  BufferUtils.createFloatBuffer(new float[16]);
 
@@ -55,6 +55,8 @@ public class Shader {
         Shader.PLAYER = new Shader("livingentity");
         Shader.STANDART = new Shader("standart");
         Shader.BULLET = new Shader("bullet");
+        Shader.MENU = new Shader("menu");
+        Shader.MENU.setUniformMat4f("uModel", new Matrix4f().identity());
         Shader.STANDART.setUniformMat4f("uModel", new Matrix4f().identity());
         Shader.BULLET.setUniformMat4f("uModel", new Matrix4f().identity());
         Shader.TILE.setUniformMat4f("uModel", new Matrix4f().identity());

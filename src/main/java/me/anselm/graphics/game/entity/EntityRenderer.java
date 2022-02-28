@@ -1,7 +1,7 @@
 package me.anselm.graphics.game.entity;
 
 import me.anselm.game.Game;
-import me.anselm.game.entities.enemies.Enemy;
+import me.anselm.game.entities.enemies.Zombie;
 import me.anselm.game.entities.player.Player;
 import me.anselm.game.world.Level;
 import me.anselm.graphics.shaders.mesh.RenderMesh;
@@ -14,7 +14,7 @@ public class EntityRenderer {
     private final static Logger logger = LoggerUtils.getLogger(EntityRenderer.class);
 
     private static Player player = Game.player;
-    private static Enemy enemy = Level.enemy;
+    private static Zombie zombie = Level.zombie;
     private static RenderMesh renderMesh;
 
     public static void render() {

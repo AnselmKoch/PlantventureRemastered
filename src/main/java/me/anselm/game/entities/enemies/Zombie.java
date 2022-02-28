@@ -3,24 +3,24 @@ package me.anselm.game.entities.enemies;
 import me.anselm.game.Game;
 import me.anselm.game.entities.Entity;
 import me.anselm.game.physics.CollitionDetector;
-import me.anselm.game.world.LevelManager;
 import me.anselm.graphics.game.entity.EntityRenderer;
 import me.anselm.graphics.texture.Texture;
+import me.anselm.utils.AssetStorage;
 import me.anselm.utils.LoggerUtils;
 import me.anselm.utils.Position;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 import org.slf4j.Logger;
 
-public class Enemy extends Entity {
-    private static final Logger logger = LoggerUtils.getLogger(Enemy.class);
+public class Zombie extends Entity {
+    private static final Logger logger = LoggerUtils.getLogger(Zombie.class);
 
     private boolean doDamangeAnimation;
 
-    public Enemy(Vector3f position, float width, float height, float size, Texture texture, Position center) {
-        super(position, width, height, size, texture, center);
+    public Zombie(Vector3f position) {
+        super(position, 20.0f, 20.0f, 1.0f, AssetStorage.getTexture("zombie"), Position.CENTER,  false);
         this.setSpeed(0.5f);
+        this.setHealth(10);
     }
 
     @Override
@@ -40,11 +40,11 @@ public class Enemy extends Entity {
         playerPos.sub(this.getPosition()).normalize();
         Vector2f momentum = new Vector2f(playerPos.x,playerPos.y);
         this.setMomentum(momentum);
-        for (Enemy enemy : Game.levelManager.getCurrentLevel().getEnemyArrayList()) {
-            if (CollitionDetector.colides(this, enemy)) {
-                Vector2f enemyPos = new Vector2f(enemy.getPosition().x, enemy.getPosition().y).normalize();
+        for (Zombie zombie : Game.levelManager.getCurrentLevel().getEnemyArrayList()) {
+            if (CollitionDetector.colides(this, zombie)) {
+                Vector2f enemyPos = new Vector2f(zombie.getPosition().x, zombie.getPosition().y).normalize();
                 Vector2f currentPos = new Vector2f(this.getPosition().x, this.getPosition().y).normalize();
-                enemy.setMomentum(currentPos.mul(-0.25f));
+                zombie.setMomentum(currentPos.mul(-0.25f));
                 this.setMomentum(enemyPos.mul(-0.25f));
             }
         }
@@ -52,28 +52,26 @@ public class Enemy extends Entity {
         EntityRenderer.getRenderMesh().changeRenderable(this);
 
 
-        doDamageColor();
+        this.doDamageColor();
         EntityRenderer.getRenderMesh().changeRenderable(this);
-    }
 
-    private void doDamageColor() {
-        if(doDamangeAnimation) {
-            this.setDamageFrame(this.getDamageFrame() + 0.05f);
-            if(getDamageFrame() > 1.0f) {
-                this.doDamangeAnimation = false;
-            }
-        }else{
-            if(this.getDamageFrame() > 0.05f) {
-                this.setDamageFrame(this.getDamageFrame() - 0.05f);
-            }
+        if(!this.isInvincible()) {
+            return;
         }
+        this.setCrtInvincTime(this.getCrtInvincTime() + 1);
 
-        this.setColor(new Vector4f(1.0f, 1.0f - this.getDamageFrame(),1.0f - this.getDamageFrame(), 1.0f));
+        if(this.getCrtInvincTime() >= this.getInvincTime()) {
+            this.setInvincible(false);
+            this.setCrtInvincTime(0);
+        }
     }
+
 
     @Override
-    public void onDamage() {
-        this.doDamangeAnimation = true;
-        this.setDamageFrame(0.0f);
+    public void die() {
+        Game.monsterDeathCounter++;
+        Game.levelManager.getCurrentLevel().getEnemyArrayList().remove(this);
+        EntityRenderer.getRenderMesh().removeRenderable(this);
     }
+
 }

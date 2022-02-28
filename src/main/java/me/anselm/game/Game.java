@@ -1,24 +1,17 @@
 package me.anselm.game;
 
-import me.anselm.game.entities.enemies.Enemy;
 import me.anselm.game.entities.player.Player;
 import me.anselm.game.entities.player.items.Bullet;
-import me.anselm.game.physics.CollitionDetector;
-import me.anselm.game.world.Level;
 import me.anselm.game.world.LevelManager;
-import me.anselm.graphics.Window;
 import me.anselm.graphics.game.entity.EntityRenderer;
+import me.anselm.graphics.game.hud.HUDRenderer;
 import me.anselm.utils.AssetStorage;
 import me.anselm.utils.LoggerUtils;
 import me.anselm.utils.Position;
 import org.joml.Random;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
-
-import java.nio.DoubleBuffer;
 
 public class Game {
     private static final Logger logger = LoggerUtils.getLogger(Game.class);
@@ -27,27 +20,34 @@ public class Game {
     public static LevelManager levelManager;
 
     public static int seed;
+    public static int monsterDeathCounter;
 
     public static Vector2f mousePos;
 
-    private static DoubleBuffer posX = BufferUtils.createDoubleBuffer(1), posY = BufferUtils.createDoubleBuffer(1);
+    public static boolean rendering = false;
+    public static boolean ticking = false;
+
     public static void init() {
         logger.info("Initializing game...");
 
+        rendering = true;
+        ticking = true;
+
+        monsterDeathCounter = 0;
         seed = new Random().nextInt(10000);
 
-        player = new Player(new Vector3f(200f,100f,1.0f), 15,15,1.0f, AssetStorage.getTexture("player"), Position.CENTER);
+        player = new Player(new Vector3f(200f,100f,1.0f));
         EntityRenderer.getRenderMesh().addRenderable(player);
+
+        HUDRenderer.updatePlayerHearts();
 
 
         levelManager = new LevelManager();
+
     }
 
     public static void tick() {
         logger.info("Running game tick...");
-
-        GLFW.glfwGetCursorPos(Window.window, posX,posY);
-        mousePos = new Vector2f((float)posX.get(0), Window.HEIGHT - (float)posY.get(0));
 
         movePlayer();
         player.calculateCurrentTile();

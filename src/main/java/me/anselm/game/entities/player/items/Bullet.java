@@ -17,8 +17,8 @@ public class Bullet extends Entity {
     private static final Logger logger = LoggerUtils.getLogger(Bullet.class);
 
 
-    public Bullet(Vector3f position, float width, float height, float size, Texture texture, Position orientation) {
-        super(position, width, height, size, texture, orientation);
+    public Bullet(Vector3f position, float width, float height, float size, Texture texture, Position orientation, boolean transparency) {
+        super(position, width, height, size, texture, orientation, false);
     }
 
     @Override
@@ -38,7 +38,12 @@ public class Bullet extends Entity {
     }
 
     @Override
-    public void onDamage() {
+    public void die() {
+
+    }
+
+    @Override
+    public void onDamage(int damge) {
 
     }
 }

@@ -24,15 +24,10 @@ public class Input {
         public void invoke(long window, int button, int action, int mods) {
             if (action == GLFW.GLFW_PRESS) {
 
-                if(Game.mousePos == null) {
+                if(Window.mousePos == null) {
                     return;
                 }
-
-                Vector3f world = new Matrix4f(Window.view).mul(Window.perspective).unproject(Game.mousePos.x, Game.mousePos.y, 0.0f,
-                        new int[]{0, 0, Window.TARGETWITDTH, Window.TARGETHEIGHT}, new Vector3f());
-
-                world.sub(Game.player.getPosition()).normalize();
-                Game.player.shoot(new Vector2f(world.x, world.y));
+                Window.handleMouseClick();
             }
         }
     };

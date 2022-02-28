@@ -3,12 +3,19 @@ import me.anselm.graphics.game.entity.EntityRenderer;
 import me.anselm.graphics.game.font.FontRenderer;
 import me.anselm.graphics.game.hud.HUDRenderer;
 import me.anselm.graphics.game.world.WorldRenderer;
+import me.anselm.graphics.menu.MenuRenderer;
+import me.anselm.menu.MenuManagar;
 import me.anselm.utils.AssetStorage;
+import org.joml.Vector2f;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import me.anselm.graphics.Window;
 import me.anselm.graphics.shaders.Shader;
 import me.anselm.utils.LoggerUtils;
 import org.lwjgl.Version;
+
+import java.nio.DoubleBuffer;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 
@@ -21,7 +28,9 @@ public class Plantventure {
 
     private static boolean running;
 
+
     public static int ups;
+
 
     public void run() {
         logger.info("Starting game...");
@@ -32,11 +41,12 @@ public class Plantventure {
         Window.init();
         Shader.init();
         AssetStorage.init();
+        MenuRenderer.init();
         WorldRenderer.init();
         HUDRenderer.init();
         EntityRenderer.init();
         FontRenderer.init();
-        Game.init();
+        MenuManagar.init();
 
         long lastTime = System.nanoTime();
         double delta = 0.0;
@@ -50,7 +60,11 @@ public class Plantventure {
             delta += (now - lastTime) / ns;
             lastTime = now;
             if (delta >= 1.0) {
-                Game.tick();
+                Window.handleMouse();
+
+                if(Game.ticking) {
+                    Game.tick();
+                }
                 updates++;
                 delta--;
             }

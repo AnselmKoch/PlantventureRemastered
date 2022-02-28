@@ -143,8 +143,73 @@ public abstract class Renderable {
         this.positions = corners;
     }
 
+    public Renderable(Vector3f position, float width, float height, float size, Position orientation, Vector4f color) {
+        logger.info("Instantiating renderable without texture...");
+        this.position = position;
+        this.width = width;
+        this.height = height;
+        this.size = size;
+        this.orientation = orientation;
 
-    public void updateVertices() {
+        Vector2f texCord1 = new Vector2f(0, 0);
+        Vector2f texCord2 = new Vector2f(0, 1);
+        Vector2f texCord3 = new Vector2f(1, 1);
+        Vector2f texCord4 = new Vector2f(1, 0);
+
+        Vector2f[] texCords = new Vector2f[]{
+                texCord1, texCord2, texCord3, texCord4
+        };
+
+        this.texCoords = texCords;
+
+        Vector3f corner1 = null;
+        Vector3f corner2 = null;
+        Vector3f corner3 = null;
+        Vector3f corner4 = null;
+
+        if (orientation == Position.CENTER) {
+            corner1 = new Vector3f(position.x - (width / 2), position.y + (height / 2), position.z);
+            corner2 = new Vector3f(position.x - (width / 2), position.y - (height / 2), position.z);
+            corner3 = new Vector3f(position.x + (width / 2), position.y - (height / 2), position.z);
+            corner4 = new Vector3f(position.x + (width / 2), position.y + (height / 2), position.z);
+            center = position;
+        } else if (orientation == Position.TOPRIGHT) {
+            corner1 = new Vector3f(position.x, position.y, position.z);
+            corner2 = new Vector3f(position.x, position.y - height, position.z);
+            corner3 = new Vector3f(position.x - width, position.y - height, position.z);
+            corner4 = new Vector3f(position.x - width, position.y, position.z);
+            center = new Vector3f(position.x - (width / 2), position.y - (height / 2), position.z);
+        } else if (orientation == Position.TOPLEFT) {
+            corner1 = new Vector3f(position.x + width, position.y, position.z);
+            corner2 = new Vector3f(position.x + width, position.y - height, position.z);
+            corner3 = new Vector3f(position.x, position.y - height, position.z);
+            corner4 = new Vector3f(position.x, position.y, position.z);
+            center = new Vector3f(position.x + (width / 2), position.y - (height / 2), position.z);
+        } else if (orientation == Position.BOTTOMLEFT) {
+            corner1 = new Vector3f(position.x + width, position.y + height, position.z);
+            corner2 = new Vector3f(position.x + width, position.y, position.z);
+            corner3 = new Vector3f(position.x, position.y, position.z);
+            corner4 = new Vector3f(position.x, position.y + height, position.z);
+            center = new Vector3f(position.x + (width / 2), position.y + (height / 2), position.z);
+        } else if (orientation == Position.BOTTOMRIGHT) {
+            corner1 = new Vector3f(position.x, position.y + height, position.z);
+            corner2 = new Vector3f(position.x, position.y, position.z);
+            corner3 = new Vector3f(position.x - width, position.y, position.z);
+            corner4 = new Vector3f(position.x - width, position.y + height, position.z);
+            center = new Vector3f(position.x - (width / 2), position.y + (width / 2), position.z);
+        }
+
+        Vector3f[] corners = new Vector3f[]{
+                corner1,corner2,corner3,corner4
+        };
+
+        this.positions = corners;
+        this.color = color;
+    }
+
+
+
+        public void updateVertices() {
         Vector3f corner1 = null;
         Vector3f corner2 = null;
         Vector3f corner3 = null;

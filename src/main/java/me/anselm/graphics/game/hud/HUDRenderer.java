@@ -1,9 +1,11 @@
 package me.anselm.graphics.game.hud;
 
 import me.anselm.game.Game;
+import me.anselm.game.entities.player.Player;
 import me.anselm.game.entities.player.inventory.ItemStack;
 import me.anselm.game.entities.player.items.Bullet;
 import me.anselm.game.entities.player.items.Item;
+import me.anselm.game.world.hints.PlayerHeart;
 import me.anselm.game.world.hints.PointingArrow;
 import me.anselm.graphics.Window;
 import me.anselm.graphics.game.font.FontRenderer;
@@ -33,6 +35,8 @@ public class HUDRenderer {
     private static ItemContainer itemContainer;
 
     private static InformationRenderable informationText;
+
+    private static PlayerHeart[] playerHearts;
 
     public static void init() {
         logger.info("Initializing HUD renderer...");
@@ -79,12 +83,14 @@ public class HUDRenderer {
         FontRenderer.textFont.drawText("FPS:" + Window.fps +", UPS: " + Window.ups, new Vector3f(0.0f,10.0f,0.0f), 10,10,
                 new Vector4f(1.0f,1.0f,1.0f,1.0f));
 
+        FontRenderer.textFont.drawText("Kills:" + Game.monsterDeathCounter,
+                new Vector3f(375.0f,200.0f,0.0f), 15.0f,10.0f, new Vector4f(1.0f,1.0f,1.0f,1.0f));
+
         for(int i = 0; i < itemContainers.length; i++) {
             ItemContainer itemContainer = itemContainers[i];
             if(itemContainer.getItemIcon() == null) {
                 continue;
             }
-
             if(itemContainer.getItemIcon().getItemStack().getSize() == 0) {
                 renderMesh.removeRenderable(itemContainer.getItemIcon());
                 itemContainer.setItemIcon(null);
@@ -157,6 +163,39 @@ public class HUDRenderer {
         informationText = new InformationRenderable(text, time);
     }
 
+    public static void updatePlayerHearts() {
+        Player player = Game.player;
+
+        if(playerHearts == null) {
+            playerHearts = new PlayerHeart[Player.MAX_HEALTH];
+        }else{
+            for(PlayerHeart playerHeart : playerHearts) {
+                renderMesh.removeRenderable(playerHeart);
+            }
+        }
+
+        int currX = 0;
+        int currY = 180;
+
+        for(int i = 0; i < Player.MAX_HEALTH; i++) {
+
+            Texture texture;
+
+            if (i >= Game.player.getHealth()) {
+                texture = AssetStorage.getTexture("emptyheart");
+
+            } else {
+                texture = AssetStorage.getTexture("fullheart");
+            }
+
+            playerHearts[i] = new PlayerHeart(new Vector3f(currX, currY, 1.0f), 7.0f, 7.0f, 1.0f,
+                   texture, Position.TOPLEFT);
+
+            renderMesh.addRenderable(playerHearts[i]);
+
+            currX += 8;
+        }
+    }
     public static void drawInformation(int time, int amount, Class item) {
         ItemIcon itemIcon = new ItemIcon(new Vector3f(0, 155f, 1.0f), 10.0f,10.0f, 1.0f,
                 Item.createInstanceFromItem(item).getTexture(), Position.BOTTOMLEFT);

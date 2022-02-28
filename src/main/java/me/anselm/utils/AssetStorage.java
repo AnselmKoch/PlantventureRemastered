@@ -22,6 +22,11 @@ public class AssetStorage {
         textureHashMap.put("shovel", new Texture("tiles/shovel"));
         textureHashMap.put("arrow", new Texture("util/arrow"));
         textureHashMap.put("arrowup", new Texture("util/arrowup"));
+        textureHashMap.put("fullheart", new Texture("player/heart/fullheart"));
+        textureHashMap.put("emptyheart", new Texture("player/heart/emptyheart"));
+        textureHashMap.put("halfheart", new Texture("player/heart/halfheart"));
+        textureHashMap.put("background", new Texture("util/background"));
+        textureHashMap.put("button", new Texture("util/button"));
     }
 
     public static void addToHashmap(String key, Texture texture) {

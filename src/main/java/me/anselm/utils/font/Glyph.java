@@ -2,8 +2,8 @@ package me.anselm.utils.font;
 
 public class Glyph {
 
-    public final float width;
-    public final float height;
+    public float width;
+    public float height;
     public final float x;
     public final float y;
     public final float xOffset;

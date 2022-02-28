@@ -4,11 +4,14 @@ import me.anselm.graphics.Window;
 import me.anselm.graphics.game.Renderable;
 import me.anselm.graphics.game.font.FontRenderer;
 import me.anselm.graphics.texture.Texture;
+import me.anselm.utils.AssetStorage;
 import me.anselm.utils.FileUtils;
+import me.anselm.utils.LoggerUtils;
 import me.anselm.utils.Position;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+import org.slf4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -20,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class TextFont {
+    private static final Logger logger = LoggerUtils.getLogger(TextFont.class);
 
     private File fontFile;
     private File fontImage; // 512 * 512;
@@ -45,24 +49,30 @@ public class TextFont {
         }
     }
 
-    public void drawTextCentered(String text, Vector3f position, float width, float height, Vector4f color) {
+    public void drawTextCentered(String text, Vector3f position, float width, float height, float size, Vector4f color) {
         RenderChar[] renderChars = new RenderChar[text.length()];
 
         float totalWidth = 0.0f;
         for(int i = 0; i < text.length(); i++) {
 
             if(text.charAt(i) == ' ') {
+                totalWidth += 0.3 * size;
                 continue;
             }
 
             Glyph glyph = glyphMap.get(text.charAt(i));
-            float charWidth = glyph.width / width;
+            float charWidth = glyph.width * size;
             totalWidth += charWidth;
         }
-        float currX = position.x - (totalWidth / 2f), currY = position.y;
+
+        logger.info("TOTAL WIDHT:" + totalWidth);
+        totalWidth = totalWidth - totalWidth/ width;
+
+        float currX = position.x - totalWidth / 2f, currY = position.y + (height /2) * size ;
         for(int i = 0; i < text.length(); i++) {
             char c = text.charAt(i);
             if (c == ' ') {
+                currX += 0.3 *size;
                 continue;
             }
 
@@ -79,15 +89,14 @@ public class TextFont {
 
             };
 
-            float charWidth = glyph.width / width;
-            float charHeight = glyph.height / height;
-            float charXOffset = glyph.xOffset / width;
-            float charYOffset = glyph.yOffset / height;
+            float charWidth = glyph.width  * size;
+            float charHeight = glyph.height * size;
+            float charXOffset = glyph.xOffset * size;
+            float charYOffset = glyph.yOffset * size;
 
-            float widthTotal = 0f;
             RenderChar renderChar = new RenderChar(c,
                     new Vector3f(currX + charXOffset, currY- charYOffset - charHeight, 1.0f),
-                    texCords, charWidth, charHeight + charYOffset, 1.0f, fontTexture, Position.BOTTOMLEFT, color);
+                    texCords, charWidth, charHeight, 1.0f, fontTexture, Position.BOTTOMLEFT, color);
 
             renderChars[i] = renderChar;
 

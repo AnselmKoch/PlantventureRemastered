@@ -1,13 +1,11 @@
 package me.anselm.game.world;
 
-import me.anselm.game.entities.enemies.Enemy;
+import me.anselm.game.Game;
 import me.anselm.graphics.game.entity.EntityRenderer;
 import me.anselm.graphics.game.world.WorldRenderer;
-import org.joml.Vector2f;
 import org.joml.Vector2i;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 public class LevelManager {
@@ -34,9 +32,10 @@ public class LevelManager {
     public void switchLevel(Vector2i levelDirection) {
         WorldRenderer.getRenderMesh().clear();
 
-        for(Enemy enemy : currentLevel.getEnemyArrayList()) {
-            EntityRenderer.getRenderMesh().removeRenderable(enemy);
-        }
+        Game.player.getBullets().clear();
+        EntityRenderer.getRenderMesh().clear();
+
+        EntityRenderer.getRenderMesh().addRenderable(Game.player);
 
         levelIndex = levelDirection;
         this.currentLevel = new Level(levelIndex);
