@@ -1,7 +1,10 @@
 package me.anselm.game.entities;
 
+import me.anselm.game.entities.enemies.Zombie;
 import me.anselm.game.entities.player.Player;
 import me.anselm.graphics.game.Renderable;
+import me.anselm.graphics.game.entity.Healthbar;
+import me.anselm.graphics.game.entity.HealthbarRenderer;
 import me.anselm.graphics.game.hud.HUDRenderer;
 import me.anselm.graphics.texture.Texture;
 import me.anselm.utils.LoggerUtils;
@@ -21,16 +24,19 @@ public abstract class Entity extends Renderable {
 
     private boolean doDamangeAnimation;
     private boolean isInvincible;
-    private  final int invincTime;
+    private int invincTime;
     private int crtInvincTime;
     private int health;
     public static final int MAX_HEALTH = 10;
 
+    private Healthbar healthbar;
+
+    private Vector3f healthBarPos;
 
     private boolean doTransparencyOnDamage;
     private float damageFrame;
 
-    public Entity(Vector3f position, float width, float height, float size, Texture texture, Position center, boolean transparency) {
+    public Entity(Vector3f position, float width, float height, float size, Texture texture, Position center, boolean transparency, int health) {
         super(position, width, height, size, texture, center);
         this.momentum = new Vector2f(0.0f,0.0f);
         this.doDamangeAnimation = false;
@@ -38,6 +44,16 @@ public abstract class Entity extends Renderable {
         this.invincTime = 60;
         this.crtInvincTime = 0;
         this.doTransparencyOnDamage = transparency;
+        this.health = health;
+
+        if(this instanceof Player) {
+            return;
+        }
+
+        this.healthBarPos = new Vector3f().set(this.getPosition());
+        this.healthBarPos.y -= this.height;
+
+        this.healthbar = new Healthbar(healthBarPos, width, 3.0f, this.getHealth(), this);
     }
 
     public abstract void onRender();
@@ -51,7 +67,11 @@ public abstract class Entity extends Renderable {
     }
 
     public void setMomentum(Vector2f momentum) {
-        this.momentum.add(momentum).normalize(this.speed);
+        if(this.speed != 0.0f) {
+            this.momentum.add(momentum).normalize(this.speed);
+        }else{
+            this.momentum.add(momentum).normalize(this.shotspeed);
+        }
     }
 
     public void setMomentumTotal(Vector2f momentum) {
@@ -61,6 +81,7 @@ public abstract class Entity extends Renderable {
 
     public void doDamageColor() {
         if(doDamangeAnimation) {
+
             this.setDamageFrame(this.getDamageFrame() + 0.05f);
             if(getDamageFrame() > 1.0f) {
                 this.doDamangeAnimation = false;
@@ -87,11 +108,12 @@ public abstract class Entity extends Renderable {
             return;
         }
 
-        logger.info("HEALTH BEFORE : " + this.health);
-
         this.health -= damage;
 
-        logger.info("HEALTH AFTER : " + this.health);
+        if(this instanceof Zombie) {
+            this.healthbar.update(this.getHealth());
+            HealthbarRenderer.getRenderMesh().changeRenderable(this.healthbar.getHealthRed());
+        }
 
         if(health <= 0) {
             this.die();
@@ -104,6 +126,11 @@ public abstract class Entity extends Renderable {
         if(this instanceof Player) {
             HUDRenderer.updatePlayerHearts();
         }
+
+        if(this.healthbar == null) {
+            return;
+        }
+
     }
 
     public abstract void die();
@@ -156,6 +183,10 @@ public abstract class Entity extends Renderable {
         isInvincible = invincible;
     }
 
+    public void setInvincTime(int time) {
+        this.invincTime = time;
+    }
+
     public int getInvincTime() {
         return invincTime;
     }
@@ -174,5 +205,9 @@ public abstract class Entity extends Renderable {
 
     public void setHealth(int health) {
         this.health = health;
+    }
+
+    public Healthbar getHealthbar() {
+        return healthbar;
     }
 }

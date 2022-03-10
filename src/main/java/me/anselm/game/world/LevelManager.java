@@ -2,10 +2,12 @@ package me.anselm.game.world;
 
 import me.anselm.game.Game;
 import me.anselm.graphics.game.entity.EntityRenderer;
+import me.anselm.graphics.game.hud.HUDRenderer;
 import me.anselm.graphics.game.world.WorldRenderer;
 import org.joml.Vector2i;
 
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 public class LevelManager {
@@ -37,7 +39,11 @@ public class LevelManager {
 
         EntityRenderer.getRenderMesh().addRenderable(Game.player);
 
+        HUDRenderer.setShowPointingArrows(false);
+        HUDRenderer.toggleArrows();
+
         levelIndex = levelDirection;
+        Game.seed = new Random().nextInt(1000000);
         this.currentLevel = new Level(levelIndex);
 
     }

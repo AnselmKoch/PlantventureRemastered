@@ -4,19 +4,26 @@ import me.anselm.game.Game;
 import me.anselm.game.entities.Entity;
 import me.anselm.game.entities.player.inventory.Inventory;
 import me.anselm.game.entities.player.inventory.ItemStack;
-import me.anselm.game.entities.player.items.BasicBullet;
-import me.anselm.game.entities.player.items.Bullet;
+import me.anselm.game.entities.player.items.BasicBulletItem;
+import me.anselm.game.entities.player.items.PoisonBulletItem;
+import me.anselm.game.entities.player.items.bullets.BasicBullet;
+import me.anselm.game.entities.player.items.bullets.Bullet;
 import me.anselm.game.entities.player.items.Item;
+import me.anselm.game.entities.player.items.StoneBulletItem;
+import me.anselm.game.entities.player.items.WaterBulletItem;
+import me.anselm.game.entities.player.items.bullets.PoisonBullet;
+import me.anselm.game.entities.player.items.bullets.StoneBullet;
+import me.anselm.game.entities.player.items.bullets.WaterBullet;
+import me.anselm.game.powerups.Powerup;
 import me.anselm.game.world.Interactable;
 import me.anselm.game.world.Level;
 import me.anselm.game.world.LevelManager;
-import me.anselm.game.world.hints.PlayerHeart;
 import me.anselm.game.world.tiles.Tile;
 import me.anselm.graphics.Window;
 import me.anselm.graphics.game.entity.EntityRenderer;
 import me.anselm.graphics.game.hud.HUDRenderer;
 import me.anselm.graphics.game.world.WorldRenderer;
-import me.anselm.graphics.texture.Texture;
+import me.anselm.menu.MenuManagar;
 import me.anselm.utils.AssetStorage;
 import me.anselm.utils.LoggerUtils;
 import me.anselm.utils.Position;
@@ -28,9 +35,8 @@ import java.util.ArrayList;
 
 public class Player extends Entity {
     private static final Logger logger = LoggerUtils.getLogger(Player.class);
-
+    private static final float cooldownPerTick = 1.0f / 60.0f;
     public Tile currentTile;
-
     private ArrayList<Bullet> bullets;
     private Inventory inventory;
     private Class currentBullet;
@@ -38,10 +44,8 @@ public class Player extends Entity {
     private Item currentBulletInstance;
     private float currentCooldown = 0.0f;
 
-    private static final float cooldownPerTick = 1.0f / 60.0f;
-
     public Player(Vector3f position) {
-        super(position, 15.0f, 15gi.0f, 1.0f, AssetStorage.getTexture("player"), Position.CENTER, true);
+        super(position, 15.0f, 15.0f, 1.0f, AssetStorage.getTexture("player"), Position.CENTER, true, MAX_HEALTH);
         bullets = new ArrayList<>();
         this.inventory = new Inventory();
         this.setHealth(MAX_HEALTH);
@@ -64,7 +68,7 @@ public class Player extends Entity {
         int xInd = Window.WORLDWITH / tilesX;
         int yInd = Window.WORLDHEIGHT / tilesY;
 
-        int currX = (int)this.getPosition().x / xInd;
+        int currX = (int) this.getPosition().x / xInd;
         int currY = (int) this.getPosition().y / yInd;
 
         this.currentTileX = currX;
@@ -72,7 +76,7 @@ public class Player extends Entity {
 
         try {
             this.currentTile = level.tiles[currY][currX];
-        }catch (Exception e) {
+        } catch (Exception e) {
             return;
         }
     }
@@ -80,7 +84,7 @@ public class Player extends Entity {
     public void switchBullet(int key) {
         ItemStack itemStack = this.inventory.getItemStack(key);
 
-        if(itemStack == null) {
+        if (itemStack == null) {
             return;
         }
 
@@ -91,34 +95,58 @@ public class Player extends Entity {
     }
 
     public void shoot(Vector2f momentum) {
-        if(currentBullet == null) {
+        if (currentBullet == null) {
             return;
         }
 
-        if(!this.getInventory().containsInInventory(currentBullet)) {
+        if (!this.getInventory().containsInInventory(currentBullet)) {
             return;
         }
 
-        if(this.currentCooldown >= 0.0f) {
+        if (this.currentCooldown >= 0.0f) {
             return;
         }
 
 
+        Bullet bullet = null;
 
-        Bullet bullet = new Bullet(new Vector3f().set(this.getPosition()), 5.0f,5.0f,1.0f,currentBulletInstance.getTexture(),Position.CENTER, false);
-        bullet.setMomentumTotal(momentum.mul(this.getShotspeed()));
+        if (currentBulletInstance instanceof BasicBulletItem) {
+            bullet = new BasicBullet(1, 1.5f,  new Vector3f().set(this.getPosition()));
+
+        } else if (currentBulletInstance instanceof StoneBulletItem) {
+
+            bullet = new StoneBullet(1, 1.5f,  new Vector3f().set(this.getPosition()));
+
+        } else if (currentBulletInstance instanceof WaterBulletItem) {
+
+            bullet = new WaterBullet(1, 1.5f,  new Vector3f().set(this.getPosition()));
+
+        } else if (currentBulletInstance instanceof PoisonBulletItem) {
+            bullet = new PoisonBullet(1, 1.5f, new Vector3f().set(this.getPosition()));
+        }
+
+        bullet.setMomentumTotal(momentum.mul(bullet.getShotspeed()).mul(this.getShotspeed()));
         bullets.add(bullet);
         EntityRenderer.getRenderMesh().addRenderable(bullet);
         this.getInventory().removeItem(currentBullet);
         this.currentCooldown = this.getCooldown();
     }
 
+    public void pickupPowerup(Powerup powerup) {
+        this.setDamage(this.getDamage() + powerup.getDamage());
+        this.setHealth(this.getHealth() + powerup.getHealth());
+        this.setSpeed(this.getSpeed() + powerup.getSpeed());
+        this.setShotspeed(this.getShotspeed() + powerup.getShotSpeed());
+        HUDRenderer.drawItemPickUp(300, powerup);
+        HUDRenderer.updatePlayerHearts();
+    }
+
     public void interact(Interactable interactable) {
-        if(interactable == null) {
+        if (interactable == null) {
             return;
         }
 
-        if(interactable.isInteractable()) {
+        if (interactable.isInteractable()) {
             WorldRenderer.getRenderMesh().removeRenderable(Game.levelManager.getCurrentLevel().icons[currentTileY][currentTileX]);
         }
 
@@ -129,25 +157,48 @@ public class Player extends Entity {
     public void move(Vector2f momentum) {
         this.addToPosition(momentum.mul(this.getSpeed()));
 
-        if(this.getPosition().x > Window.WORLDWITH) {
-            Game.levelManager.switchLevel(LevelManager.levelIndex.add(Level.tilesX,0));
+        Level level = Game.levelManager.getCurrentLevel();
+        if (this.getPosition().x > Window.WORLDWITH) {
+
+            if (level.isDone()) {
+                Game.levelManager.switchLevel(LevelManager.levelIndex.add(Level.tilesX, 0));
+            } else {
+                this.getPosition().sub(new Vector3f(momentum.x, momentum.y, 0.0f).mul(this.getSpeed()));
+            }
         }
-        if(this.getPosition().x < 0) {
-            Game.levelManager.switchLevel(LevelManager.levelIndex.add(-Level.tilesX,0));
+        if (this.getPosition().x < 0) {
+            if (level.isDone()) {
+                Game.levelManager.switchLevel(LevelManager.levelIndex.add(-Level.tilesX, 0));
+
+            } else {
+                this.getPosition().sub(new Vector3f(momentum.x, momentum.y, 0.0f).mul(this.getSpeed()));
+            }
         }
 
-        if(this.getPosition().y > Window.WORLDHEIGHT) {
-            Game.levelManager.switchLevel(LevelManager.levelIndex.add(0,Level.tilesY));
-        }
-        if(this.getPosition().y < 0) {
-            Game.levelManager.switchLevel(LevelManager.levelIndex.add(0,-Level.tilesY));
-        }
-     }
+        if (this.getPosition().y > Window.WORLDHEIGHT) {
 
-     public void resetPosition() {
-        this.setPosition(new Vector3f(200,100,1.0f));
+            if (level.isDone()) {
+                Game.levelManager.switchLevel(LevelManager.levelIndex.add(0, Level.tilesY));
+
+            } else {
+                this.getPosition().sub(new Vector3f(momentum.x, momentum.y, 0.0f).mul(this.getSpeed()));
+            }
+        }
+        if (this.getPosition().y < 0) {
+
+            if (level.isDone()) {
+                Game.levelManager.switchLevel(LevelManager.levelIndex.add(0, -Level.tilesY));
+
+            } else {
+                this.getPosition().sub(new Vector3f(momentum.x, momentum.y, 0.0f).mul(this.getSpeed()));
+            }
+        }
+    }
+
+    public void resetPosition() {
+        this.setPosition(new Vector3f(200, 100, 1.0f));
         EntityRenderer.getRenderMesh().changeRenderable(this);
-     }
+    }
 
     @Override
     public void tick() {
@@ -164,12 +215,12 @@ public class Player extends Entity {
 
         EntityRenderer.getRenderMesh().changeRenderable(this);
 
-        if(!this.isInvincible()) {
+        if (!this.isInvincible()) {
             return;
         }
         this.setCrtInvincTime(this.getCrtInvincTime() + 1);
 
-        if(this.getCrtInvincTime() >= this.getInvincTime()) {
+        if (this.getCrtInvincTime() >= this.getInvincTime()) {
             this.setInvincible(false);
             this.setCrtInvincTime(0);
         }
@@ -177,7 +228,8 @@ public class Player extends Entity {
 
     @Override
     public void die() {
-
+        Game.ticking = false;
+        MenuManagar.switchMenu(MenuManagar.menuMap.get(MenuManagar.DIED_MENU));
     }
 
     public ArrayList<Bullet> getBullets() {
@@ -193,7 +245,7 @@ public class Player extends Entity {
     }
 
     public void setCurrentBullet(Class currentBullet) {
-        this.currentBullet =currentBullet;
+        this.currentBullet = currentBullet;
         this.currentBulletInstance = Item.createInstanceFromItem(currentBullet);
     }
 

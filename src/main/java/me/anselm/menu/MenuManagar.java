@@ -5,6 +5,9 @@ import me.anselm.game.physics.CollitionDetector;
 import me.anselm.graphics.menu.MenuRenderer;
 import me.anselm.menu.buttons.Button;
 import me.anselm.menu.buttons.Clickable;
+import me.anselm.menu.menus.DiedMenu;
+import me.anselm.menu.menus.GamePauseMenu;
+import me.anselm.menu.menus.MainMenu;
 import me.anselm.menu.menus.Menu;
 import me.anselm.utils.AssetStorage;
 import me.anselm.utils.LoggerUtils;
@@ -13,37 +16,41 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.slf4j.Logger;
 
+import java.util.HashMap;
+
 public class MenuManagar {
     private static final Logger logger = LoggerUtils.getLogger(MenuManagar.class);
+
+    public static HashMap<String, Menu> menuMap;
+    public static final String MAIN_MENU = "MainMenu", GAME_PAUSE_MENU = "GamePauseMenu", DIED_MENU = "Died";
 
     private static Menu currentMenu;
 
     public static void init() {
-        currentMenu = new Menu();
-        Button button = new Button("Start Game", new Vector3f(200.0f,100.0f,1.0f),
-                100.0f,20.0f,1.0f, AssetStorage.getTexture("button"), Position.CENTER);
+        menuMap = new HashMap<>();
+        menuMap.put(MAIN_MENU, new MainMenu());
+        menuMap.put(GAME_PAUSE_MENU, new GamePauseMenu());
+        menuMap.put(DIED_MENU, new DiedMenu());
+        Menu mainMenu = menuMap.get(MAIN_MENU);
+        mainMenu.init();
+        switchMenu(mainMenu);
+    }
 
-        button.setClickable(new Clickable() {
-            @Override
-            public void click(Button button) {
-                Game.init();
-            }
+    public static void switchMenu(Menu menu) {
 
-            @Override
-            public void hover(Button button) {
-                button.setColor(new Vector4f(0.7f,0.7f,0.7f,1.0f));
-                MenuRenderer.renderMesh.changeRenderable(button);
-            }
+        if(menu == null) {
+            MenuRenderer.renderMesh.clear();
+            currentMenu = null;
+            return;
+        }
 
-            @Override
-            public void unhover(Button button) {
-                button.setColor(new Vector4f(1.0f,1.0f,1.0f,1.0f));
-                MenuRenderer.renderMesh.changeRenderable(button);
-            }
-        });
-        currentMenu.addButton(button);
+        MenuRenderer.renderMesh.clear();
+        currentMenu = menu;
         MenuRenderer.renderMesh.addRenderable(currentMenu);
-        MenuRenderer.renderMesh.addRenderable(currentMenu.getButtons().get(0));
+
+        for(Button button : currentMenu.getButtons()) {
+            MenuRenderer.renderMesh.addRenderable(button);
+        }
     }
 
     public static Menu getCurrentMenu() {

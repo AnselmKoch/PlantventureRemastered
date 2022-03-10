@@ -53,7 +53,7 @@ public class RenderMesh {
     private Shader shader;
     public int amount;
     public float[] vertices;
-    private int[] textureSlots = {0,1,2,3,4,5,6,7};
+    private int[] textureSlots = {0,1,2,3,4,5,6,7,8,9};
     private List<String> freeSlots;
     private List<Texture> textureList;
     public Map<Renderable, MeshProperty> renderables;

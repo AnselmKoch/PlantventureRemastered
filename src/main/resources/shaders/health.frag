@@ -11,5 +11,5 @@ out vec4 color;
 
 void main(){
     int id = int(fTexID);
-    color = texture(tex_sample[id], oTex) * oColor;
+    color = oColor;
 }

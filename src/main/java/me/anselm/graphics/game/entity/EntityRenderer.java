@@ -24,7 +24,6 @@ public class EntityRenderer {
     }
 
     public static void init() {
-        logger.info("Initializing EntityRenderer...");
         renderMesh = new RenderMesh(Shader.PLAYER, 100);
     }
 

@@ -65,10 +65,9 @@ public class TextFont {
             totalWidth += charWidth;
         }
 
-        logger.info("TOTAL WIDHT:" + totalWidth);
-        totalWidth = totalWidth - totalWidth/ width;
+        totalWidth = totalWidth - totalWidth/ width * size;
 
-        float currX = position.x - totalWidth / 2f, currY = position.y + (height /2) * size ;
+        float currX = position.x - (totalWidth / 2f), currY = position.y + (height /2) * size ;
         for(int i = 0; i < text.length(); i++) {
             char c = text.charAt(i);
             if (c == ' ') {

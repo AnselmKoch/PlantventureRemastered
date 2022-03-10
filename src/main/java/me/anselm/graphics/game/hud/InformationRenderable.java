@@ -11,10 +11,12 @@ public class InformationRenderable{
 
     private int maxFrames;
     private int currentFrame;
+    private float transparency;
 
     public InformationRenderable(String text, int maxFrames) {
         this.text = text;
         this.maxFrames = maxFrames;
+        this.transparency = 0.0f;
     }
 
     public InformationRenderable(ItemIcon itemIcon, int maxFrames) {
@@ -22,6 +24,15 @@ public class InformationRenderable{
         this.text = "+" + counter;
         this.maxFrames = maxFrames;
         this.currentFrame = 0;
+        this.transparency = 0.0f;
+    }
+
+    public float getTransparency() {
+        return this.transparency;
+    }
+
+    public void setTransparency(float transparency) {
+        this.transparency = transparency;
     }
 
     public ItemIcon getItemIcon() {
@@ -53,6 +64,7 @@ public class InformationRenderable{
     }
 
     public void setCurrentFrame(int currentFrame) {
+        this.transparency = (float) this.maxFrames / (float) this.currentFrame;
         this.currentFrame = currentFrame;
     }
 }

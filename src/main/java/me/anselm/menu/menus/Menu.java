@@ -12,22 +12,33 @@ import org.joml.Vector4f;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Menu extends Renderable{
+public abstract class Menu extends Renderable{
 
     private List<Button> buttonArrayList;
 
     private Button currentTarget;
 
-    public Menu() {
-        super(new Vector3f(0.0f,0.0f,0.0f), 400.0f, 200.0f, 1.0f, AssetStorage.getTexture("background"), Position.BOTTOMLEFT);
+    private String name;
+
+    public Menu(Vector3f position, float width, float height, float size, Texture texture, Position orientation, String name) {
+        super(position, width, height, size, texture, orientation);
+
+        this.name = name;
         buttonArrayList = new ArrayList<>();
     }
 
+    public Menu(Vector3f position, float width, float height, float size, Position orientation, Vector4f color, String name) {
+        super(position, width, height, size, orientation, color);
+        this.name = name;
+        this.buttonArrayList = new ArrayList<>();
+    }
 
     public void addButton(Button button) {
         this.buttonArrayList.add(button);
         MenuRenderer.renderMesh.addRenderable(button);
     }
+
+    public abstract void init();
 
     public List<Button> getButtons() {
         return this.buttonArrayList;
@@ -54,5 +65,13 @@ public class Menu extends Renderable{
 
         this.currentTarget = currentTarget;
         this.currentTarget.getClickable().hover(this.currentTarget);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

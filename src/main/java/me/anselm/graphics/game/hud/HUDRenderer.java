@@ -3,14 +3,13 @@ package me.anselm.graphics.game.hud;
 import me.anselm.game.Game;
 import me.anselm.game.entities.player.Player;
 import me.anselm.game.entities.player.inventory.ItemStack;
-import me.anselm.game.entities.player.items.Bullet;
 import me.anselm.game.entities.player.items.Item;
+import me.anselm.game.powerups.Powerup;
 import me.anselm.game.world.hints.PlayerHeart;
 import me.anselm.game.world.hints.PointingArrow;
 import me.anselm.graphics.Window;
 import me.anselm.graphics.game.font.FontRenderer;
 import me.anselm.graphics.game.items.ItemIcon;
-import me.anselm.graphics.game.world.WorldRenderer;
 import me.anselm.graphics.shaders.mesh.RenderMesh;
 import me.anselm.graphics.shaders.Shader;
 import me.anselm.graphics.texture.Texture;
@@ -21,8 +20,7 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.slf4j.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.*;
 
 
 public class HUDRenderer {
@@ -31,29 +29,29 @@ public class HUDRenderer {
     private static ItemContainer[] itemContainers;
     private static RenderMesh renderMesh;
 
-    private static InformationRenderable informationToRender;
     private static ItemContainer itemContainer;
 
-    private static InformationRenderable informationText;
+    private static InformationRenderable informationPickUp;
+    private static InformationRenderable informationLooted;
+    private static InformationRenderable[] informationItem;
 
     private static PlayerHeart[] playerHearts;
+
+    private static PointingArrow[] pointingArrows;
+
+    private static boolean showPointingArrows;
 
     public static void init() {
         logger.info("Initializing HUD renderer...");
 
+        showPointingArrows = false;
+
         renderMesh  = new RenderMesh(Shader.STANDART, 100);
 
-        int itemWidth = 10;
-        itemContainers = new ItemContainer[5];
-        int currX = 0;
 
-        for(int i = 0; i < itemContainers.length; i++) {
-            itemContainers[i] = new ItemContainer(null,
-                    new Vector3f(currX, 200.0f, 2.0f), 10.0f, 10.0f, 1.0f,
-                    AssetStorage.getTexture("itemcontainer"), Position.TOPLEFT);
-            renderMesh.addRenderable(itemContainers[i]);
-            currX+=itemWidth;
-        }
+        informationItem = new InformationRenderable[4];
+        itemContainers = new ItemContainer[5];
+        resetInventory();
 
         PointingArrow pointingArrow = new PointingArrow(new Vector3f(400 - 15f / 2f, Window.WORLDHEIGHT / 2, 0.0f),
                 15.0f, 15.0f, 1.0f,AssetStorage.getTexture("arrow"), Position.CENTER);
@@ -73,6 +71,10 @@ public class HUDRenderer {
         PointingArrow pointingArrow3 = new PointingArrow(new Vector3f(200.0f, 7.5f, 0.0f),
                 15.0f, 15.0f, 1.0f, AssetStorage.getTexture("arrowup"), Position.CENTER);
         HUDRenderer.getRenderMesh().addRenderable(pointingArrow3);
+
+        pointingArrows = new PointingArrow[] {
+                pointingArrow, pointingArrow1,pointingArrow2,pointingArrow3
+        };
     }
 
     public static void render() {
@@ -108,47 +110,87 @@ public class HUDRenderer {
             }
         }
 
+        float currY = 140.0f;
+        for(int i = 0; i < informationItem.length; i++) {
+            if(informationItem[i] == null) {
+                continue;
+            }
 
-        int maxAmountFrame;
-        int currentAmountFrame;
-        float transparency;
+            InformationRenderable informationRenderable = informationItem[i];
+            FontRenderer.textFont.drawText(informationRenderable.getText(),
+                    new Vector3f(180.0f, currY, 1.0f), 8.0f,8.0f,
+                    new Vector4f(0.0f,0.0f,0.0f,1.0f - 1.0f / informationRenderable.getTransparency()));
 
-        if(informationToRender != null) {
-            InformationRenderable informationRenderable = informationToRender;
+            currY += 12.0f;
+        }
 
+        if(informationPickUp != null) {
+            InformationRenderable informationRenderable = informationPickUp;
 
-            maxAmountFrame = informationRenderable.getMaxFrames();
-            currentAmountFrame = informationRenderable.getCurrentFrame();
-            transparency = (float) maxAmountFrame / (float) currentAmountFrame;
             FontRenderer.textFont.drawText(informationRenderable.getText(),
                     new Vector3f(0.0f, 155.0f, 1.0f), 10.0f, 10.0f,
-                    new Vector4f(0.0f, 0.0f, 0.0f, 1.0f - 1.0f / transparency));
-            informationRenderable.getItemIcon().setColor(new Vector4f(1.0f, 1.0f, 1.0f, 1.0f - 1.0f / transparency));
-            itemContainer.setColor(informationRenderable.getItemIcon().getColor());
+                    new Vector4f(0.0f, 0.0f, 0.0f, 1.0f - 1.0f / informationPickUp.getTransparency()));
+        }
+
+        if(informationLooted != null) {
+
+            FontRenderer.textFont.drawText(informationLooted.getText(),
+                    new Vector3f(0.0f, 145.0f, 1.0f), 10.0f, 10.0f,
+                    new Vector4f(1.0f, 1.0f, 1.0f, 1.0f - 1.0f / informationLooted.getTransparency()));
+        }
+    }
+
+    public static void tick() {
+
+        for(InformationRenderable informationRenderable1 : informationItem) {
+            if(informationRenderable1 == null) {
+                continue;
+            }
+
+            informationRenderable1.setCurrentFrame(informationRenderable1.getCurrentFrame() +1);
+
+            if (informationRenderable1.getCurrentFrame() >= informationRenderable1.getMaxFrames()) {
+                informationRenderable1 = null;
+            }
 
 
-            renderMesh.changeRenderable(informationRenderable.getItemIcon());
-            renderMesh.changeRenderable(itemContainer);
-            informationRenderable.setCurrentFrame(currentAmountFrame + 1);
+        }
 
+        InformationRenderable informationRenderable = informationPickUp;
+
+
+
+        if(informationRenderable != null) {
+
+            informationRenderable.setCurrentFrame(informationRenderable.getCurrentFrame() + 1);
+            informationRenderable.getItemIcon().setColor(new Vector4f(1.0f, 1.0f, 1.0f, 1.0f - 1.0f / informationRenderable.getTransparency()));
             if (informationRenderable.getCurrentFrame() >= informationRenderable.getMaxFrames()) {
-                renderMesh.removeRenderable(informationToRender.getItemIcon());
+                renderMesh.removeRenderable(informationPickUp.getItemIcon());
                 renderMesh.removeRenderable(itemContainer);
-                informationToRender = null;
+                informationPickUp = null;
                 InformationRenderable.counter = 0;
                 return;
             }
+            renderMesh.changeRenderable(informationRenderable.getItemIcon());
+            itemContainer.setColor(new Vector4f(1.0f,1.0f,1.0f,1.0f -1.0f / informationRenderable.getTransparency()));
+            renderMesh.changeRenderable(itemContainer);
         }
 
+        if(informationLooted != null) {
+            informationLooted.setCurrentFrame(informationLooted.getCurrentFrame() + 1);
+        }
 
-        if(informationText != null) {
-            maxAmountFrame = informationText.getMaxFrames();
-            currentAmountFrame = informationText.getCurrentFrame();
-            transparency = (float)maxAmountFrame / (float)currentAmountFrame;
-            FontRenderer.textFont.drawText(informationText.getText(),
-                    new Vector3f(0.0f, 145.0f,1.0f), 10.0f,10.0f,
-                    new Vector4f(1.0f,1.0f,1.0f,1.0f - 1.0f / transparency));
-            informationText.setCurrentFrame(informationText.getCurrentFrame() + 1);
+    }
+
+    public static void toggleArrows() {
+        for(PointingArrow pointingArrow : pointingArrows) {
+            if(showPointingArrows) {
+                pointingArrow.setColor(new Vector4f(1.0f,1.0f,1.0f,1.0f));
+            }else{
+                pointingArrow.setColor(new Vector4f(0.2f,0.2f,0.2f,1.0f));
+            }
+
+            renderMesh.changeRenderable(pointingArrow);
         }
     }
 
@@ -160,7 +202,30 @@ public class HUDRenderer {
     }
 
     public static void drawInformation(int time, String text) {
-        informationText = new InformationRenderable(text, time);
+        informationLooted = new InformationRenderable(text, time);
+    }
+
+    public static void drawItemPickUp(int time, Powerup powerup) {
+        informationItem[0] = new InformationRenderable("+" + powerup.getDamage() + " damage", time);
+        informationItem[1] = new InformationRenderable("+" + powerup.getHealth() + " health", time);
+        informationItem[2] = new InformationRenderable("+" + powerup.getShotSpeed() + " shot speed", time);
+        informationItem[3] = new InformationRenderable("+" + powerup.getSpeed() + " speed", time);
+    }
+
+    public static void resetInventory() {
+        int itemWidth = 10;
+        int currX = 0;
+
+        for(int i = 0; i < itemContainers.length; i++) {
+            if(itemContainers[i] != null) {
+                renderMesh.removeRenderable(itemContainers[i]);
+            }
+            itemContainers[i] = new ItemContainer(null,
+                    new Vector3f(currX, 200.0f, 2.0f), 10.0f, 10.0f, 1.0f,
+                    AssetStorage.getTexture("itemcontainer"), Position.TOPLEFT);
+            renderMesh.addRenderable(itemContainers[i]);
+            currX+=itemWidth;
+        }
     }
 
     public static void updatePlayerHearts() {
@@ -203,8 +268,8 @@ public class HUDRenderer {
         InformationRenderable.counter += amount;
         InformationRenderable informationRenderable = new InformationRenderable(itemIcon, time);
 
-        if(informationToRender != null) {
-            renderMesh.removeRenderable(informationToRender.getItemIcon());
+        if(informationPickUp != null) {
+            renderMesh.removeRenderable(informationPickUp.getItemIcon());
             renderMesh.removeRenderable(itemContainer);
         }else{
             itemContainer = new ItemContainer(itemIcon,
@@ -212,7 +277,7 @@ public class HUDRenderer {
         }
 
         renderMesh.addRenderable(itemContainer);
-        informationToRender = informationRenderable;
+        informationPickUp = informationRenderable;
         renderMesh.addRenderable(informationRenderable.getItemIcon());
     }
 
@@ -226,5 +291,9 @@ public class HUDRenderer {
 
     public static RenderMesh getRenderMesh() {
         return renderMesh;
+    }
+
+    public static void setShowPointingArrows(boolean show) {
+        showPointingArrows = show;
     }
 }

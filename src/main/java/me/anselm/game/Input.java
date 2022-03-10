@@ -1,12 +1,8 @@
 package me.anselm.game;
 
-import me.anselm.game.entities.player.items.Bullet;
 import me.anselm.graphics.Window;
+import me.anselm.menu.MenuManagar;
 import me.anselm.utils.LoggerUtils;
-import org.joml.Matrix4f;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWMouseButtonCallback;
@@ -51,6 +47,13 @@ public class Input {
                     case 83: pressedKeys[2] = true; break;
                     case 68: pressedKeys[3] = true;break;
                     case 69: Game.player.interact(Game.player.currentTile); break;
+                    case GLFW.GLFW_KEY_ESCAPE: if(Game.ticking) {
+                        Game.ticking = false;
+                        MenuManagar.switchMenu(MenuManagar.menuMap.get(MenuManagar.GAME_PAUSE_MENU));
+                    } else {
+                        Game.ticking = true;
+                        MenuManagar.switchMenu(null);
+                    }
                 }
             }
             if(action == GLFW.GLFW_RELEASE) {

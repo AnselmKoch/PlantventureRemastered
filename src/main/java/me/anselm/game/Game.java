@@ -1,13 +1,12 @@
 package me.anselm.game;
 
 import me.anselm.game.entities.player.Player;
-import me.anselm.game.entities.player.items.Bullet;
+import me.anselm.game.entities.player.items.bullets.Bullet;
 import me.anselm.game.world.LevelManager;
 import me.anselm.graphics.game.entity.EntityRenderer;
 import me.anselm.graphics.game.hud.HUDRenderer;
-import me.anselm.utils.AssetStorage;
+import me.anselm.graphics.game.world.WorldRenderer;
 import me.anselm.utils.LoggerUtils;
-import me.anselm.utils.Position;
 import org.joml.Random;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -34,20 +33,32 @@ public class Game {
         ticking = true;
 
         monsterDeathCounter = 0;
-        seed = new Random().nextInt(10000);
+        seed = new Random().nextInt(1000000);
 
         player = new Player(new Vector3f(200f,100f,1.0f));
         EntityRenderer.getRenderMesh().addRenderable(player);
 
         HUDRenderer.updatePlayerHearts();
+        HUDRenderer.toggleArrows();
 
 
         levelManager = new LevelManager();
 
     }
 
+    public static void reset() {
+        HUDRenderer.resetInventory();
+        HUDRenderer.setShowPointingArrows(false);
+        HUDRenderer.toggleArrows();
+        EntityRenderer.getRenderMesh().clear();
+        WorldRenderer.getRenderMesh().clear();
+        ticking = false;
+    }
+
     public static void tick() {
         logger.info("Running game tick...");
+
+        HUDRenderer.tick();
 
         movePlayer();
         player.calculateCurrentTile();

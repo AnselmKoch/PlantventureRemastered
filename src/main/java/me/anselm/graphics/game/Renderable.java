@@ -277,6 +277,7 @@ public abstract class Renderable {
 
     public void setPosition(Vector3f position) {
         this.position = position;
+        updateVertices();
     }
 
     public float getWidth() {

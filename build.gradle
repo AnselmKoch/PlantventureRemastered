@@ -31,7 +31,7 @@ java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 
 ext {
-    javaMainClass = "Plantventure"
+    javaMainClass = "me/anselm/Plantventure"
 }
 
 application {
@@ -55,7 +55,7 @@ shadowJar{
 
 jar {
     manifest {
-        attributes "Main-Class": "Plantventure"
+        attributes "Main-Class": "me/anselm/Plantventure"
     }
 }
 

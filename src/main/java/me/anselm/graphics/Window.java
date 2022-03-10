@@ -3,6 +3,7 @@ package me.anselm.graphics;
 import me.anselm.game.Game;
 import me.anselm.game.Input;
 import me.anselm.graphics.game.entity.EntityRenderer;
+import me.anselm.graphics.game.entity.HealthbarRenderer;
 import me.anselm.graphics.game.font.FontRenderer;
 import me.anselm.graphics.game.hud.HUDRenderer;
 import me.anselm.graphics.game.world.WorldRenderer;
@@ -100,13 +101,14 @@ public class Window {
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
-        if(Game.rendering ) {
-            WorldRenderer.render();
-            EntityRenderer.render();
-            HUDRenderer.render();
-        } else {
-            MenuRenderer.render();
-        }
+        WorldRenderer.render();
+        EntityRenderer.render();
+        HealthbarRenderer.render();
+        HUDRenderer.render();
+
+
+        MenuRenderer.render();
+
 
         FontRenderer.render();
 

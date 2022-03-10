@@ -1,21 +1,20 @@
+package me.anselm;
+
 import me.anselm.game.Game;
 import me.anselm.graphics.game.entity.EntityRenderer;
+import me.anselm.graphics.game.entity.Healthbar;
+import me.anselm.graphics.game.entity.HealthbarRenderer;
 import me.anselm.graphics.game.font.FontRenderer;
 import me.anselm.graphics.game.hud.HUDRenderer;
 import me.anselm.graphics.game.world.WorldRenderer;
 import me.anselm.graphics.menu.MenuRenderer;
 import me.anselm.menu.MenuManagar;
 import me.anselm.utils.AssetStorage;
-import org.joml.Vector2f;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import me.anselm.graphics.Window;
 import me.anselm.graphics.shaders.Shader;
 import me.anselm.utils.LoggerUtils;
 import org.lwjgl.Version;
-
-import java.nio.DoubleBuffer;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 
@@ -26,7 +25,7 @@ import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
 public class Plantventure {
     private static final Logger logger = LoggerUtils.getLogger(Plantventure.class);
 
-    private static boolean running;
+    public static boolean running;
 
 
     public static int ups;
@@ -45,6 +44,7 @@ public class Plantventure {
         WorldRenderer.init();
         HUDRenderer.init();
         EntityRenderer.init();
+        HealthbarRenderer.init();
         FontRenderer.init();
         MenuManagar.init();
 

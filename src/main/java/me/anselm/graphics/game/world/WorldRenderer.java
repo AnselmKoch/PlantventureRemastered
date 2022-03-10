@@ -28,6 +28,7 @@ public class WorldRenderer {
     private static RenderMesh renderMesh;
 
     private static Tile tile;
+
     public static void render() {
         if (Game.levelManager == null) {
             return;

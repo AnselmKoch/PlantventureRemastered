@@ -1,14 +1,11 @@
 package me.anselm.game.entities.player.inventory;
 
 import me.anselm.game.Game;
-import me.anselm.game.entities.player.items.BasicBullet;
-import me.anselm.game.entities.player.items.Item;
 import me.anselm.graphics.game.hud.HUDRenderer;
 import me.anselm.utils.LoggerUtils;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class Inventory {
