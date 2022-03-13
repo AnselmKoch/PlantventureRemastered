@@ -47,7 +47,7 @@ public class Level {
     public static Zombie zombie;
 
     private Vector2i location;
-    private float test3;
+    private float test4;
     private double[][] simplexIndex;
 
     private List<Entity> zombieArrayList;
