@@ -1,7 +1,6 @@
 package me.anselm.graphics.game.world;
 
 import me.anselm.game.Game;
-import me.anselm.game.world.Level;
 import me.anselm.game.world.tiles.Tile;
 import me.anselm.graphics.shaders.mesh.RenderMesh;
 import me.anselm.graphics.shaders.Shader;
@@ -12,13 +11,10 @@ import org.slf4j.Logger;
 import static org.lwjgl.opengl.GL11.GL_LINE_STRIP;
 import static org.lwjgl.opengl.GL11.glBegin;
 import static org.lwjgl.opengl.GL11.glClipPlane;
-import static org.lwjgl.opengl.GL11.glColor4f;
 import static org.lwjgl.opengl.GL11.glEnd;
 import static org.lwjgl.opengl.GL11.glIndexPointer;
 import static org.lwjgl.opengl.GL11.glLineWidth;
 import static org.lwjgl.opengl.GL11.glVertex3f;
-import static org.lwjgl.opengl.GL13.GL_TEXTURE1;
-import static org.lwjgl.opengl.GL13.glActiveTexture;
 
 
 public class WorldRenderer {

@@ -11,7 +11,7 @@ public class StoneBullet extends Bullet{
     public StoneBullet(int damage, float shotSpeed, Vector3f position) {
 
 
-        super(false, true, true, damage, shotSpeed,
+        super(false, false, false, damage, shotSpeed,
                 position, 8.0f, 8.0f, 1.0f, AssetStorage.getTexture("stonebullet"), Position.CENTER);
     }
 }

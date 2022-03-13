@@ -21,7 +21,6 @@ public class GamePauseMenu extends Menu{
         setupResumeButton();
         setupResetButton();
         setupBackButton();
-
     }
 
     @Override

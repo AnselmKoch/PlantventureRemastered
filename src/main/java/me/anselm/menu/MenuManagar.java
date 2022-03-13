@@ -9,6 +9,7 @@ import me.anselm.menu.menus.DiedMenu;
 import me.anselm.menu.menus.GamePauseMenu;
 import me.anselm.menu.menus.MainMenu;
 import me.anselm.menu.menus.Menu;
+import me.anselm.menu.menus.PickupMenu;
 import me.anselm.utils.AssetStorage;
 import me.anselm.utils.LoggerUtils;
 import me.anselm.utils.Position;
@@ -22,7 +23,7 @@ public class MenuManagar {
     private static final Logger logger = LoggerUtils.getLogger(MenuManagar.class);
 
     public static HashMap<String, Menu> menuMap;
-    public static final String MAIN_MENU = "MainMenu", GAME_PAUSE_MENU = "GamePauseMenu", DIED_MENU = "Died";
+    public static final String MAIN_MENU = "MainMenu", GAME_PAUSE_MENU = "GamePauseMenu", DIED_MENU = "Died", PICK_MENU = "Pickup";
 
     private static Menu currentMenu;
 
@@ -31,6 +32,8 @@ public class MenuManagar {
         menuMap.put(MAIN_MENU, new MainMenu());
         menuMap.put(GAME_PAUSE_MENU, new GamePauseMenu());
         menuMap.put(DIED_MENU, new DiedMenu());
+        menuMap.put(PICK_MENU, new PickupMenu());
+
         Menu mainMenu = menuMap.get(MAIN_MENU);
         mainMenu.init();
         switchMenu(mainMenu);

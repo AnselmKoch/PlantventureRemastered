@@ -1,8 +1,11 @@
 package me.anselm.game;
 
+import me.anselm.game.entities.Entity;
 import me.anselm.game.entities.player.Player;
 import me.anselm.game.entities.player.items.bullets.Bullet;
-import me.anselm.game.world.LevelManager;
+import me.anselm.game.powerups.BasicPowerup;
+import me.anselm.game.powerups.Powerup;
+import me.anselm.game.world.levels.LevelManager;
 import me.anselm.graphics.game.entity.EntityRenderer;
 import me.anselm.graphics.game.hud.HUDRenderer;
 import me.anselm.graphics.game.world.WorldRenderer;
@@ -41,6 +44,7 @@ public class Game {
         HUDRenderer.updatePlayerHearts();
         HUDRenderer.toggleArrows();
 
+        Powerup.powerups.add(BasicPowerup.class);
 
         levelManager = new LevelManager();
 
@@ -50,6 +54,11 @@ public class Game {
         HUDRenderer.resetInventory();
         HUDRenderer.setShowPointingArrows(false);
         HUDRenderer.toggleArrows();
+
+        for(Entity entity : levelManager.getCurrentLevel().getEnemyArrayList()) {
+            entity.getHealthbar().destroy();
+        }
+
         EntityRenderer.getRenderMesh().clear();
         WorldRenderer.getRenderMesh().clear();
         ticking = false;
@@ -62,7 +71,7 @@ public class Game {
 
         movePlayer();
         player.calculateCurrentTile();
-        player.tick();
+        player.processTick();
 
         levelManager.getCurrentLevel().tick();
 

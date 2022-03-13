@@ -1,11 +1,16 @@
-package me.anselm.game.world;
+package me.anselm.game.world.levels;
 
 import me.anselm.game.Game;
+import me.anselm.game.entities.enemies.Bat;
+import me.anselm.game.entities.enemies.Beetle;
+import me.anselm.game.entities.enemies.Igel;
+import me.anselm.game.entities.enemies.Zombie;
 import me.anselm.graphics.game.entity.EntityRenderer;
 import me.anselm.graphics.game.hud.HUDRenderer;
 import me.anselm.graphics.game.world.WorldRenderer;
 import org.joml.Vector2i;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -18,7 +23,15 @@ public class LevelManager {
 
     public static Set<String> levelSet = new HashSet<>();
 
+    public static ArrayList<Class> possibleEnemies;
+
     public LevelManager() {
+        possibleEnemies = new ArrayList<>();
+        possibleEnemies.add(Beetle.class);
+        possibleEnemies.add(Zombie.class);
+        possibleEnemies.add(Igel.class);
+        possibleEnemies.add(Bat.class);
+
         levelIndex = new Vector2i(0,0);
         currentLevel = new Level(levelIndex);
     }

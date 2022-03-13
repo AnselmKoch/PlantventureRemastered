@@ -16,8 +16,8 @@ import me.anselm.game.entities.player.items.bullets.StoneBullet;
 import me.anselm.game.entities.player.items.bullets.WaterBullet;
 import me.anselm.game.powerups.Powerup;
 import me.anselm.game.world.Interactable;
-import me.anselm.game.world.Level;
-import me.anselm.game.world.LevelManager;
+import me.anselm.game.world.levels.Level;
+import me.anselm.game.world.levels.LevelManager;
 import me.anselm.game.world.tiles.Tile;
 import me.anselm.graphics.Window;
 import me.anselm.graphics.game.entity.EntityRenderer;
@@ -35,14 +35,12 @@ import java.util.ArrayList;
 
 public class Player extends Entity {
     private static final Logger logger = LoggerUtils.getLogger(Player.class);
-    private static final float cooldownPerTick = 1.0f / 60.0f;
     public Tile currentTile;
     private ArrayList<Bullet> bullets;
     private Inventory inventory;
     private Class currentBullet;
     private int currentTileY, currentTileX;
     private Item currentBulletInstance;
-    private float currentCooldown = 0.0f;
 
     public Player(Vector3f position) {
         super(position, 15.0f, 15.0f, 1.0f, AssetStorage.getTexture("player"), Position.CENTER, true, MAX_HEALTH);
@@ -103,7 +101,7 @@ public class Player extends Entity {
             return;
         }
 
-        if (this.currentCooldown >= 0.0f) {
+        if (this.getCurrentCooldown() >= 0.0f) {
             return;
         }
 
@@ -115,7 +113,7 @@ public class Player extends Entity {
 
         } else if (currentBulletInstance instanceof StoneBulletItem) {
 
-            bullet = new StoneBullet(1, 1.5f,  new Vector3f().set(this.getPosition()));
+            bullet = new StoneBullet(3, 1.5f,  new Vector3f().set(this.getPosition()));
 
         } else if (currentBulletInstance instanceof WaterBulletItem) {
 
@@ -129,7 +127,7 @@ public class Player extends Entity {
         bullets.add(bullet);
         EntityRenderer.getRenderMesh().addRenderable(bullet);
         this.getInventory().removeItem(currentBullet);
-        this.currentCooldown = this.getCooldown();
+        this.setCurrentCooldown(this.getCooldown());
     }
 
     public void pickupPowerup(Powerup powerup) {
@@ -155,7 +153,13 @@ public class Player extends Entity {
 
     @Override
     public void move(Vector2f momentum) {
-        this.addToPosition(momentum.mul(this.getSpeed()));
+        this.addToPosition(momentum.mul(this.getSpeed()), 0.0f);
+
+        if(momentum.x < 0) {
+            this.rotateY(0);
+        }else{
+            this.rotateY(160);
+        }
 
         Level level = Game.levelManager.getCurrentLevel();
         if (this.getPosition().x > Window.WORLDWITH) {
@@ -166,6 +170,7 @@ public class Player extends Entity {
                 this.getPosition().sub(new Vector3f(momentum.x, momentum.y, 0.0f).mul(this.getSpeed()));
             }
         }
+
         if (this.getPosition().x < 0) {
             if (level.isDone()) {
                 Game.levelManager.switchLevel(LevelManager.levelIndex.add(-Level.tilesX, 0));
@@ -193,6 +198,9 @@ public class Player extends Entity {
                 this.getPosition().sub(new Vector3f(momentum.x, momentum.y, 0.0f).mul(this.getSpeed()));
             }
         }
+
+
+        EntityRenderer.getRenderMesh().changeRenderable(this);
     }
 
     public void resetPosition() {
@@ -202,28 +210,8 @@ public class Player extends Entity {
 
     @Override
     public void tick() {
-
         this.doDamageColor();
 
-        if (this.getCooldown() == 0.0f) {
-            return;
-        }
-
-        if (this.getCooldown() >= 0.0f) {
-            this.currentCooldown -= cooldownPerTick;
-        }
-
-        EntityRenderer.getRenderMesh().changeRenderable(this);
-
-        if (!this.isInvincible()) {
-            return;
-        }
-        this.setCrtInvincTime(this.getCrtInvincTime() + 1);
-
-        if (this.getCrtInvincTime() >= this.getInvincTime()) {
-            this.setInvincible(false);
-            this.setCrtInvincTime(0);
-        }
     }
 
     @Override

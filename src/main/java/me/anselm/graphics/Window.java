@@ -97,7 +97,7 @@ public class Window {
 
          perspective = new Matrix4f().ortho(orthoMinX,
                 orthoMaxX , orthoMinY,
-               orthoMaxY, 0.0f, -100.0f);
+               orthoMaxY, 100.0f, -100.0f);
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 

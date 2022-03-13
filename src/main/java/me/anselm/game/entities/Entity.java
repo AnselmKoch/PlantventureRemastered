@@ -1,8 +1,13 @@
 package me.anselm.game.entities;
 
+import me.anselm.game.Game;
+import me.anselm.game.entities.enemies.Beetle;
+import me.anselm.game.entities.enemies.Enemy;
 import me.anselm.game.entities.enemies.Zombie;
 import me.anselm.game.entities.player.Player;
+import me.anselm.game.physics.CollitionDetector;
 import me.anselm.graphics.game.Renderable;
+import me.anselm.graphics.game.entity.EntityRenderer;
 import me.anselm.graphics.game.entity.Healthbar;
 import me.anselm.graphics.game.entity.HealthbarRenderer;
 import me.anselm.graphics.game.hud.HUDRenderer;
@@ -14,6 +19,9 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.slf4j.Logger;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
 public abstract class Entity extends Renderable {
     private static final Logger logger = LoggerUtils.getLogger(Entity.class);
 
@@ -22,12 +30,14 @@ public abstract class Entity extends Renderable {
 
     private float damage, speed, shotspeed, cooldown;
 
+    public static final float cooldownPerTick = 1.0f / 60.0f;
     private boolean doDamangeAnimation;
     private boolean isInvincible;
     private int invincTime;
     private int crtInvincTime;
     private int health;
     public static final int MAX_HEALTH = 10;
+    private float currentCooldown = 0.0f;
 
     private Healthbar healthbar;
 
@@ -50,10 +60,6 @@ public abstract class Entity extends Renderable {
             return;
         }
 
-        this.healthBarPos = new Vector3f().set(this.getPosition());
-        this.healthBarPos.y -= this.height;
-
-        this.healthbar = new Healthbar(healthBarPos, width, 3.0f, this.getHealth(), this);
     }
 
     public abstract void onRender();
@@ -76,6 +82,65 @@ public abstract class Entity extends Renderable {
 
     public void setMomentumTotal(Vector2f momentum) {
         this.momentum = momentum;
+    }
+
+    public void processTick() {
+        this.tick();
+
+        EntityRenderer.getRenderMesh().changeRenderable(this);
+
+        if(!(this instanceof Player)) {
+            this.getHealthbar().updatePosition(new Vector3f().set(this.getPosition()));
+        }
+
+        this.doDamageColor();
+
+        if(this.isInvincible()) {
+
+            this.setCrtInvincTime(this.getCrtInvincTime() + 1);
+
+
+            if (this.getCrtInvincTime() >= this.getInvincTime()) {
+                this.setInvincible(false);
+                this.setCrtInvincTime(0);
+            }
+        }
+
+        if (this.getCooldown() == 0.0f) {
+            return;
+        }
+
+        this.setCurrentCooldown(this.getCurrentCooldown() - cooldownPerTick);
+
+        if(this instanceof Player) {
+            return;
+        }
+
+        if(this.getCurrentCooldown() <= 0.0f) {
+            Enemy enemy = (Enemy) this;
+            enemy.attack();
+
+            this.setCurrentCooldown(this.getCooldown());
+        }
+    }
+
+    public boolean checkIfOutOfBounds() {
+        if(this.getPosition().x > 400) {
+            return true;
+        }
+        if(this.getPosition().x < 0) {
+            return true;
+        }
+
+        if(this.getPosition().y < 0) {
+            return true;
+        }
+
+        if(this.getPosition().y > 200) {
+            return true;
+        }
+
+        return false;
     }
 
 
@@ -101,7 +166,25 @@ public abstract class Entity extends Renderable {
         this.setColor(color);
     }
 
+    public void doCollition(float strength) {
+        for (Entity zombie : Game.levelManager.getCurrentLevel().getEnemyArrayList()) {
+            if (CollitionDetector.colides(this, zombie)) {
+                Vector2f enemyPos = new Vector2f(zombie.getPosition().x, zombie.getPosition().y).normalize();
+                Vector2f currentPos = new Vector2f(this.getPosition().x, this.getPosition().y).normalize();
+                zombie.setMomentum(currentPos.mul(strength));
+                this.setMomentum(enemyPos.mul(strength));
+            }
+        }
+    }
 
+    public Vector2f calculateDirectionToPlayer() {
+        Vector3f playerPos = new Vector3f().set(Game.player.getPosition());
+
+        playerPos.sub(this.getPosition()).normalize();
+        Vector2f momentum = new Vector2f(playerPos.x,playerPos.y);
+
+        return momentum;
+    }
     public void onDamage(int damage) {
 
         if(isInvincible) {
@@ -110,7 +193,7 @@ public abstract class Entity extends Renderable {
 
         this.health -= damage;
 
-        if(this instanceof Zombie) {
+        if(this.getHealthbar() != null) {
             this.healthbar.update(this.getHealth());
             HealthbarRenderer.getRenderMesh().changeRenderable(this.healthbar.getHealthRed());
         }
@@ -209,5 +292,46 @@ public abstract class Entity extends Renderable {
 
     public Healthbar getHealthbar() {
         return healthbar;
+    }
+
+    public static Entity createInstance(Class clazz, Vector3f pos) {
+
+        try {
+            Constructor constructor = clazz.getConstructor(Vector3f.class);
+            try {
+               return (Entity)constructor.newInstance(pos);
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+
+    public float getCurrentCooldown() {
+        return currentCooldown;
+    }
+
+    public void setCurrentCooldown(float currentCooldown) {
+        this.currentCooldown = currentCooldown;
+    }
+
+    public void setHealthbar(Healthbar healthbar) {
+        this.healthbar = healthbar;
+    }
+
+    public Vector3f getHealthBarPos() {
+        return healthBarPos;
+    }
+
+    public void setHealthBarPos(Vector3f healthBarPos) {
+        this.healthBarPos = healthBarPos;
     }
 }

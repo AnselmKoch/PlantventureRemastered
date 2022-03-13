@@ -1,10 +1,11 @@
-package me.anselm.game.world;
+package me.anselm.game.world.levels;
 
 import me.anselm.game.Game;
+import me.anselm.game.entities.Entity;
+import me.anselm.game.entities.enemies.Igel;
 import me.anselm.game.entities.enemies.Zombie;
 import me.anselm.game.entities.player.items.bullets.Bullet;
 import me.anselm.game.physics.CollitionDetector;
-import me.anselm.game.powerups.BasicPowerup;
 import me.anselm.game.world.tiles.Tile;
 import me.anselm.game.world.tiles.tile.DirtTile;
 import me.anselm.game.world.tiles.tile.GrassTile;
@@ -14,7 +15,6 @@ import me.anselm.game.world.tiles.tile.StoneTile;
 import me.anselm.game.world.tiles.tile.TreasureTile;
 import me.anselm.graphics.Window;
 import me.anselm.graphics.game.entity.EntityRenderer;
-import me.anselm.graphics.game.entity.Healthbar;
 import me.anselm.graphics.game.entity.HealthbarRenderer;
 import me.anselm.graphics.game.hud.HUDRenderer;
 import me.anselm.graphics.game.world.LootedIcon;
@@ -49,11 +49,13 @@ public class Level {
     private Vector2i location;
     private double[][] simplexIndex;
 
-    private List<Zombie> zombieArrayList;
+    private List<Entity> zombieArrayList;
+    private List<Entity> projectileList;
 
     public Level(Vector2i location) {
         isDone = false;
         this.zombieArrayList = new ArrayList<>();
+        this.projectileList = new ArrayList<>();
         location.x = new Random().nextInt(1000000);
         location.y = new Random().nextInt(1000000);
         tiles = new Tile[tilesY][tilesX];
@@ -77,32 +79,30 @@ public class Level {
 
         createTile();
 
-        tiles[5][10].setPowerup(new BasicPowerup(tiles[5][10].getPosition()));
-
-        WorldRenderer.getRenderMesh().addRenderable(tiles[5][10].getPowerup().getPowerupIcon());
 
 
          Random random = new Random();
          int enemyAmount = random.nextInt(7) + 3;
-         for(int i = 0; i < 2; i++) {
-             int x = random.nextInt(400);
-             int y = random.nextInt(200);
 
-             Zombie zombie = new Zombie(new Vector3f(x,y, 1.0f));
-             zombieArrayList.add(zombie);
-             EntityRenderer.getRenderMesh().addRenderable(zombie);
-             HealthbarRenderer.getRenderMesh().addRenderable(zombie.getHealthbar().getBackGround());
-             HealthbarRenderer.getRenderMesh().addRenderable(zombie.getHealthbar().getHealthGreen());
-             HealthbarRenderer.getRenderMesh().addRenderable(zombie.getHealthbar().getHealthRed());
-         }
+         for(int i = 0; i < enemyAmount; i++) {
+          /*
+             Class clazz = LevelManager.possibleEnemies.get(new Random().nextInt(LevelManager.possibleEnemies.size()));
+             spawnEntity(clazz);
+            */
+
+          }
+
+        spawnEntity(Igel.class);
+
+
     }
 
     public void tick() {
         logger.info("Running tick...");
 
         for(int i = 0; i < zombieArrayList.size(); i++) {
-            Zombie entity = zombieArrayList.get(i);
-            entity.tick();
+            Entity entity = zombieArrayList.get(i);
+            entity.processTick();
 
             if(CollitionDetector.colides(Game.player, entity)) {
                 Game.player.onDamage((int)entity.getDamage());
@@ -121,6 +121,11 @@ public class Level {
                     checkLevelDone();
                 }
             }
+        }
+
+        for(int i = 0; i < projectileList.size(); i++) {
+            Entity entity = projectileList.get(i);
+            entity.tick();
         }
     }
 
@@ -148,6 +153,7 @@ public class Level {
                     tiles[i][j] = new TreasureTile(currPos, tileWidth, tilesHeight, 1.0f, Position.BOTTOMLEFT);
                 }
 
+
                 WorldRenderer.getRenderMesh().addRenderable(tiles[i][j]);
 
 
@@ -173,11 +179,61 @@ public class Level {
         }
     }
 
-    public List<Zombie> getEnemyArrayList() {
+    public Entity spawnEntity(Class clazz, Vector3f pos) {
+        Entity entity = Entity.createInstance(clazz,pos);
+
+        zombieArrayList.add(entity);
+        EntityRenderer.getRenderMesh().addRenderable(entity);
+        HealthbarRenderer.getRenderMesh().addRenderable(entity.getHealthbar().getBackGround());
+        HealthbarRenderer.getRenderMesh().addRenderable(entity.getHealthbar().getHealthGreen());
+        HealthbarRenderer.getRenderMesh().addRenderable(entity.getHealthbar().getHealthRed());
+
+
+        return entity;
+    }
+
+    public Entity spawnEntity(Class clazz) {
+
+        Entity entity = Entity.createInstance(clazz,calucateRandomLocation(Game.player.getPosition()));
+
+        zombieArrayList.add(entity);
+        EntityRenderer.getRenderMesh().addRenderable(entity);
+        HealthbarRenderer.getRenderMesh().addRenderable(entity.getHealthbar().getBackGround());
+        HealthbarRenderer.getRenderMesh().addRenderable(entity.getHealthbar().getHealthGreen());
+        HealthbarRenderer.getRenderMesh().addRenderable(entity.getHealthbar().getHealthRed());
+
+
+        return entity;
+    }
+
+
+    public Vector3f calucateRandomLocation(Vector3f playerPos) {
+        int x;
+        int y;
+
+        Random random = new Random();
+        x = random.nextInt(400);
+        y = random.nextInt(200);
+
+        Vector3f distanceVector = new Vector3f(x,y,0.0f);
+        while(distanceVector.distance(playerPos) < 200) {
+            distanceVector = new Vector3f(random.nextInt(400), random.nextInt(200), 0.0f);
+        }
+
+        return distanceVector;
+    }
+
+
+
+    public List<Entity> getEnemyArrayList() {
         return this.zombieArrayList;
     }
 
     public boolean isDone() {
         return isDone;
+    }
+
+    public List<Entity> getProjectileList() {
+        return projectileList;
     }
 }

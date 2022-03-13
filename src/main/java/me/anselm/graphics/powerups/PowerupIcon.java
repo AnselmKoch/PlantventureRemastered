@@ -11,7 +11,7 @@ public class PowerupIcon extends Renderable {
     private final Class clazz;
 
     public PowerupIcon(Class clazz, Vector3f position, Texture texture) {
-        super(position, 20.0f, 20.0f, 1.0f, texture, Position.BOTTOMLEFT);
+        super(position, 40.0f, 40.0f, 1.0f, texture, Position.CENTER);
         this.clazz = clazz;
     }
 
