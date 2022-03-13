@@ -165,7 +165,7 @@ public class Player extends Entity {
         if (this.getPosition().x > Window.WORLDWITH) {
 
             if (level.isDone()) {
-                Game.levelManager.switchLevel(LevelManager.levelIndex.add(Level.tilesX, 0));
+                Game.switchLevel();
             } else {
                 this.getPosition().sub(new Vector3f(momentum.x, momentum.y, 0.0f).mul(this.getSpeed()));
             }
@@ -173,7 +173,7 @@ public class Player extends Entity {
 
         if (this.getPosition().x < 0) {
             if (level.isDone()) {
-                Game.levelManager.switchLevel(LevelManager.levelIndex.add(-Level.tilesX, 0));
+                Game.switchLevel();
 
             } else {
                 this.getPosition().sub(new Vector3f(momentum.x, momentum.y, 0.0f).mul(this.getSpeed()));
@@ -183,7 +183,7 @@ public class Player extends Entity {
         if (this.getPosition().y > Window.WORLDHEIGHT) {
 
             if (level.isDone()) {
-                Game.levelManager.switchLevel(LevelManager.levelIndex.add(0, Level.tilesY));
+                Game.switchLevel();
 
             } else {
                 this.getPosition().sub(new Vector3f(momentum.x, momentum.y, 0.0f).mul(this.getSpeed()));
@@ -192,7 +192,7 @@ public class Player extends Entity {
         if (this.getPosition().y < 0) {
 
             if (level.isDone()) {
-                Game.levelManager.switchLevel(LevelManager.levelIndex.add(0, -Level.tilesY));
+             Game.switchLevel();
 
             } else {
                 this.getPosition().sub(new Vector3f(momentum.x, momentum.y, 0.0f).mul(this.getSpeed()));

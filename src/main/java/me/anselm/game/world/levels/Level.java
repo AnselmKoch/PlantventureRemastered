@@ -6,6 +6,9 @@ import me.anselm.game.entities.enemies.Igel;
 import me.anselm.game.entities.enemies.Zombie;
 import me.anselm.game.entities.player.items.bullets.Bullet;
 import me.anselm.game.physics.CollitionDetector;
+import me.anselm.game.world.levels.layouts.Difficulty;
+import me.anselm.game.world.levels.layouts.LevelLayout;
+import me.anselm.game.world.levels.layouts.SpawnInformation;
 import me.anselm.game.world.tiles.Tile;
 import me.anselm.game.world.tiles.tile.DirtTile;
 import me.anselm.game.world.tiles.tile.GrassTile;
@@ -24,6 +27,7 @@ import me.anselm.utils.LoggerUtils;
 import me.anselm.utils.Position;
 import me.anselm.utils.SimplexNoise;
 import org.joml.Random;
+import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.slf4j.Logger;
@@ -47,14 +51,18 @@ public class Level {
     public static Zombie zombie;
 
     private Vector2i location;
-    private float test4;
     private double[][] simplexIndex;
 
     private List<Entity> zombieArrayList;
     private List<Entity> projectileList;
 
-    public Level(Vector2i location) {
-        isDone = false;
+    public Level(Difficulty difficulty) {
+        if(difficulty == Difficulty.PEACEFUL) {
+            isDone = true;
+        }else{
+            isDone = false;
+        }
+        this.location = new Vector2i();
         this.zombieArrayList = new ArrayList<>();
         this.projectileList = new ArrayList<>();
         location.x = new Random().nextInt(1000000);
@@ -65,15 +73,15 @@ public class Level {
 
         Game.player.resetPosition();
 
-        double simplexStepSizeX = 1.0d / (double)tilesX;
+        double simplexStepSizeX = 1.0d / (double) tilesX;
         double simplexStepSizeY = 1.0d / (double) tilesY;
 
-        for(int i = 0; i < tilesY ; i++) {
-            for(int j = 0; j < tilesX; j++) {
-                simplexIndex[i % tilesY][j % tilesX] = SimplexNoise.noise(((double)j + location.x) * simplexStepSizeX ,
-                        ((double)i + location.y )* simplexStepSizeY, Game.seed);
+        for (int i = 0; i < tilesY; i++) {
+            for (int j = 0; j < tilesX; j++) {
+                simplexIndex[i % tilesY][j % tilesX] = SimplexNoise.noise(((double) j + location.x) * simplexStepSizeX,
+                        ((double) i + location.y) * simplexStepSizeY, Game.seed);
 
-                simplexIndex[i % tilesY][j%tilesX] *= 100.0f;
+                simplexIndex[i % tilesY][j % tilesX] *= 100.0f;
 
             }
         }
@@ -81,21 +89,17 @@ public class Level {
         createTile();
 
 
+        readLevelLayout(difficulty);
 
-         Random random = new Random();
-         int enemyAmount = random.nextInt(7) + 3;
+    }
 
-         for(int i = 0; i < enemyAmount; i++) {
-          /*
-             Class clazz = LevelManager.possibleEnemies.get(new Random().nextInt(LevelManager.possibleEnemies.size()));
-             spawnEntity(clazz);
-            */
+    private void readLevelLayout(Difficulty difficulty) {
+        List<LevelLayout> list = LevelManager.levelLayouts.get(difficulty);
+        LevelLayout levelLayout = list.get(new Random().nextInt(list.size()));
 
-          }
-
-        spawnEntity(Igel.class);
-
-
+        for(SpawnInformation spawnInformation : levelLayout.getSpawnInformationList()) {
+            spawnEntity(spawnInformation.getEnemyType(), spawnInformation.getPosition());
+        }
     }
 
     public void tick() {
@@ -181,8 +185,10 @@ public class Level {
     }
 
     public Entity spawnEntity(Class clazz, Vector3f pos) {
-        Entity entity = Entity.createInstance(clazz,pos);
+        Vector3f pos1 = new Vector3f().set(pos);
+        Entity entity = Entity.createInstance(clazz,pos1);
 
+        logger.info(pos + " ENTITY POS");
         zombieArrayList.add(entity);
         EntityRenderer.getRenderMesh().addRenderable(entity);
         HealthbarRenderer.getRenderMesh().addRenderable(entity.getHealthbar().getBackGround());

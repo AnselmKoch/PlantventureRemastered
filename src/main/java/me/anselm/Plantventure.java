@@ -29,7 +29,6 @@ public class Plantventure {
 
 
     public static int ups;
-    private static int te1st;
 
 
     public void run() {

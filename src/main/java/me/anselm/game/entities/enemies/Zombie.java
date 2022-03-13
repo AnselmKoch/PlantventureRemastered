@@ -21,7 +21,7 @@ public class Zombie extends Enemy {
     public Zombie(Vector3f position) {
         super(position, 20.0f, 20.0f, 1.0f, AssetStorage.getTexture("zombie"), Position.CENTER,  false, 5);
         this.setDamage(3);
-        this.setSpeed(1.0f);
+        this.setSpeed(1.5f);
         this.setInvincTime(20);
     }
 

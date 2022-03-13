@@ -24,7 +24,7 @@ public class Beetle extends Enemy {
     public Beetle(Vector3f position) {
         super(position, 10.0f, 10.0f, 1.0f, AssetStorage.getTexture("beetle"), Position.CENTER, false, 5);
         this.setDamage(3);
-        this.setSpeed(1.0f);
+        this.setSpeed(1.5f);
         this.setInvincTime(20);
         this.setHealth(2);
     }
