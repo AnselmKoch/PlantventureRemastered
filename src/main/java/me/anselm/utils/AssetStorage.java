@@ -34,6 +34,10 @@ public class AssetStorage {
         textureHashMap.put("poison", new Texture("tiles/poison"));
         textureHashMap.put("treasure", new Texture("tiles/treasure"));
         textureHashMap.put("poisonbullet", new Texture("player/bullets/poisonBullet"));
+        textureHashMap.put("beetle", new Texture("enemy/beetle"));
+        textureHashMap.put("igel", new Texture("enemy/igel"));
+        textureHashMap.put("igelproj", new Texture("enemy/igel/igelprojectile"));
+        textureHashMap.put("bat", new Texture("enemy/bat"));
     }
 
     public static void addToHashmap(String key, Texture texture) {

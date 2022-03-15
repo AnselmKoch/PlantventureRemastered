@@ -35,7 +35,7 @@ public abstract class Bullet extends Entity {
 
     @Override
     public void move(Vector2f momentum) {
-        this.addToPosition(momentum);
+        this.addToPosition(momentum, 0.0f);
         EntityRenderer.getRenderMesh().changeRenderable(this);
     }
 

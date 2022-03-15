@@ -3,6 +3,8 @@ package me.anselm.graphics.game;
 import me.anselm.graphics.texture.Texture;
 import me.anselm.utils.LoggerUtils;
 import me.anselm.utils.Position;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -216,10 +218,11 @@ public abstract class Renderable {
         Vector3f corner4 = null;
 
         if (orientation == Position.CENTER) {
-            corner1 = new Vector3f(position.x - (width / 2), position.y + (height / 2), position.z);
-            corner2 = new Vector3f(position.x - (width / 2), position.y - (height / 2), position.z);
-            corner3 = new Vector3f(position.x + (width / 2), position.y - (height / 2), position.z);
-            corner4 = new Vector3f(position.x + (width / 2), position.y + (height / 2), position.z);
+            corner1 = new Vector3f(position.x - (width / 2), position.y + (height / 2), 0.0f);
+            corner2 = new Vector3f(position.x - (width / 2), position.y - (height / 2), 0.0f);
+            corner3 = new Vector3f(position.x + (width / 2), position.y - (height / 2), 0.0f);
+            corner4 = new Vector3f(position.x + (width / 2), position.y + (height / 2), 0.0f);
+            position.z = 0.0f;
             center = position;
         } else if (orientation == Position.TOPRIGHT) {
             corner1 = new Vector3f(position.x, position.y, position.z);
@@ -248,16 +251,24 @@ public abstract class Renderable {
         }
 
 
-        Vector2f texCord1 = new Vector2f(0,0);
-        Vector2f texCord2 = new Vector2f(0,1);
-        Vector2f texCord3 = new Vector2f(1,1);
-        Vector2f texCord4 = new Vector2f(1,0);
+            Quaternionf dest1 = new Quaternionf().identity();
+            Quaternionf dest2 = new Quaternionf().identity();
 
-        Vector3f[] corners = new Vector3f[]{
+            Vector3f[] corners = new Vector3f[]{
                 corner1,corner2,corner3,corner4
         };
 
+
+
         this.positions = corners;
+
+    }
+
+    public void rotate270() {
+        Vector2f texCord1 = new Vector2f(1,1);
+        Vector2f texCord2 = new Vector2f(0,1);
+        Vector2f texCord3 = new Vector2f(0,0);
+        Vector2f texCord4 = new Vector2f(1,0);
 
         Vector2f[] texCords = new Vector2f[] {
                 texCord1, texCord2, texCord3, texCord4
@@ -266,9 +277,92 @@ public abstract class Renderable {
         this.texCoords = texCords;
     }
 
-    public void addToPosition(Vector2f toAdd) {
+    public void rotateStandart() {
+
+        Vector2f texCord1 = new Vector2f(0,0);
+        Vector2f texCord2 = new Vector2f(0,1);
+        Vector2f texCord3 = new Vector2f(1,1);
+        Vector2f texCord4 = new Vector2f(1,0);
+
+        Vector2f[] texCords = new Vector2f[] {
+                texCord1, texCord2, texCord3, texCord4
+        };
+
+        this.texCoords = texCords;
+    }
+
+    public void rotate180() {
+        Vector2f texCord1 = new Vector2f(1,1);
+        Vector2f texCord2 = new Vector2f(1,0);
+        Vector2f texCord3 = new Vector2f(0,0);
+        Vector2f texCord4 = new Vector2f(0,1);
+
+        Vector2f[] texCords = new Vector2f[] {
+                texCord1, texCord2, texCord3, texCord4
+        };
+
+        this.texCoords = texCords;
+    }
+
+    public void rotate90() {
+        Vector2f texCord1 = new Vector2f(0,0);
+        Vector2f texCord2 = new Vector2f(1,0);
+        Vector2f texCord3 = new Vector2f(1,1);
+        Vector2f texCord4 = new Vector2f(0,1);
+
+
+        Vector2f[] texCords = new Vector2f[] {
+                texCord1, texCord2, texCord3, texCord4
+        };
+
+        this.texCoords = texCords;
+    }
+
+    public void addToPosition(Vector2f toAdd, float rotation) {
         this.position.add(toAdd.x, toAdd.y, 0.0f);
         updateVertices();
+    }
+
+    public void rotateZ(float amount) {
+        for(int i = 0; i < this.getPositions().length; i++) {
+            Vector3f vector3f = this.getPositions()[i];
+
+            Vector3f origin = new Vector3f().set(vector3f).sub(this.getCenter());
+
+            origin.rotateZ(amount);
+
+            this.getPositions()[i] = origin.add(this.getCenter());
+
+        }
+    }
+
+
+    public void rotateX(float amount) {
+        for(int i = 0; i < this.getPositions().length; i++) {
+            Vector3f vector3f = new Vector3f(this.getPositions()[i]);
+
+            Vector3f origin = new Vector3f().set(vector3f).sub(this.getCenter());
+
+            origin.rotateX(amount);
+
+            this.getPositions()[i] = origin.add(this.getCenter());
+
+
+        }
+    }
+
+    public void rotateY(float amount) {
+        for(int i = 0; i < this.getPositions().length; i++) {
+            Vector3f vector3f = this.getPositions()[i];
+
+            Vector3f origin = new Vector3f().set(vector3f).sub(this.getCenter());
+
+            origin.rotateY(amount);
+
+            this.getPositions()[i] = origin.add(this.getCenter());
+
+
+        }
     }
 
     public Vector3f getPosition() {

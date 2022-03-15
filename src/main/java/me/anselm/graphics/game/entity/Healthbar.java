@@ -28,7 +28,7 @@ public class Healthbar{
         this.entity = entity;
         this.totalHealth = totalHealth;
 
-        position.y -= entity.getHeight() / 2f;
+        position.y = 5.0f;
 
         backGround = new Rectangle(position, width + 2.0f, height + 2.0f, 1.0f, Position.CENTER, new Vector4f(0.0f,0.0f,0.0f,1.0f));
         healthGreen = new Rectangle(position, width, height, 1.0f, Position.CENTER, new Vector4f(0.0f,1.0f,0.0f,1.0f));
@@ -44,7 +44,7 @@ public class Healthbar{
     }
 
     public void updatePosition(Vector3f position) {
-        position.y -= entity.getHeight() / 2f;
+        position.y -= entity.getHeight() / 2f + 2.0f;
         backGround.setPosition(position);
         healthGreen.setPosition(position);
 

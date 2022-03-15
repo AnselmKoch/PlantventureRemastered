@@ -1,14 +1,20 @@
 package me.anselm.game;
 
+import me.anselm.game.entities.Entity;
 import me.anselm.game.entities.player.Player;
 import me.anselm.game.entities.player.items.bullets.Bullet;
-import me.anselm.game.world.LevelManager;
+import me.anselm.game.powerups.BasicPowerup;
+import me.anselm.game.powerups.Powerup;
+import me.anselm.game.world.levels.Level;
+import me.anselm.game.world.levels.LevelManager;
+import me.anselm.game.world.levels.layouts.Difficulty;
 import me.anselm.graphics.game.entity.EntityRenderer;
 import me.anselm.graphics.game.hud.HUDRenderer;
 import me.anselm.graphics.game.world.WorldRenderer;
 import me.anselm.utils.LoggerUtils;
 import org.joml.Random;
 import org.joml.Vector2f;
+import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.slf4j.Logger;
 
@@ -22,12 +28,18 @@ public class Game {
     public static int monsterDeathCounter;
 
     public static Vector2f mousePos;
+    public static int levelCounter;
 
     public static boolean rendering = false;
     public static boolean ticking = false;
 
+    public static Difficulty difficultyLevel;
+
     public static void init() {
         logger.info("Initializing game...");
+
+        levelCounter = 0;
+        difficultyLevel = Difficulty.PEACEFUL;
 
         rendering = true;
         ticking = true;
@@ -39,17 +51,46 @@ public class Game {
         EntityRenderer.getRenderMesh().addRenderable(player);
 
         HUDRenderer.updatePlayerHearts();
+
+
+        HUDRenderer.setShowPointingArrows(true);
         HUDRenderer.toggleArrows();
 
+        Powerup.powerups.add(BasicPowerup.class);
 
         levelManager = new LevelManager();
 
+    }
+
+    public static void switchLevel() {
+        WorldRenderer.getRenderMesh().clear();
+
+        Game.player.getBullets().clear();
+        EntityRenderer.getRenderMesh().clear();
+
+        EntityRenderer.getRenderMesh().addRenderable(Game.player);
+
+        HUDRenderer.setShowPointingArrows(false);
+        HUDRenderer.toggleArrows();
+
+        Game.levelCounter++;
+        if(levelCounter == 1) {
+            difficultyLevel = Difficulty.EASY;
+        }
+
+        Game.seed = new java.util.Random().nextInt(1000000);
+        levelManager.setCurrentLevel(new Level(difficultyLevel));
     }
 
     public static void reset() {
         HUDRenderer.resetInventory();
         HUDRenderer.setShowPointingArrows(false);
         HUDRenderer.toggleArrows();
+
+        for(Entity entity : levelManager.getCurrentLevel().getEnemyArrayList()) {
+            entity.getHealthbar().destroy();
+        }
+
         EntityRenderer.getRenderMesh().clear();
         WorldRenderer.getRenderMesh().clear();
         ticking = false;
@@ -62,7 +103,7 @@ public class Game {
 
         movePlayer();
         player.calculateCurrentTile();
-        player.tick();
+        player.processTick();
 
         levelManager.getCurrentLevel().tick();
 

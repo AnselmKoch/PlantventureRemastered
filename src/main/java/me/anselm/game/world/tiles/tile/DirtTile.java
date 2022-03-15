@@ -1,6 +1,7 @@
 package me.anselm.game.world.tiles.tile;
 
 import me.anselm.game.entities.player.Player;
+import me.anselm.game.entities.player.items.BasicBulletItem;
 import me.anselm.game.entities.player.items.StoneBulletItem;
 import me.anselm.game.world.drops.LootTable;
 import me.anselm.game.world.tiles.Tile;
@@ -15,7 +16,7 @@ public class DirtTile extends Tile {
     public DirtTile(Vector3f position, float width, float height, float size, Position center) {
         super(position, width, height, size, AssetStorage.getTexture("dirt"), center);
 
-        this.setLootTable(new LootTable(StoneBulletItem.class, 30, 5));
+        this.setLootTable(new LootTable(BasicBulletItem.class, 50, 20));
     }
 
     @Override
