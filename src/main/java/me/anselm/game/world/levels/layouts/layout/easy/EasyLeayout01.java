@@ -17,6 +17,5 @@ public class EasyLeayout01 extends LevelLayout {
         this.getSpawnInformationList().add(new SpawnInformation(Beetle.class, new Vector3f(400.0f,0.0f,0.0f)));
         this.getSpawnInformationList().add(new SpawnInformation(Beetle.class, new Vector3f(400.0f,200.0f,0.0f)));
         this.getSpawnInformationList().add(new SpawnInformation(Beetle.class, new Vector3f(0.0f,200.0f,0.0f)));
-
     }
 }

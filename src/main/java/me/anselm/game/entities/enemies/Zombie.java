@@ -16,13 +16,21 @@ import org.slf4j.Logger;
 public class Zombie extends Enemy {
     private static final Logger logger = LoggerUtils.getLogger(Zombie.class);
 
-    private boolean doDamangeAnimation;
+    public  Texture[] textures = new Texture[] {
+            AssetStorage.getTexture("zombie"), AssetStorage.getTexture("zombie1"), AssetStorage.getTexture("zombie2")
+    };
+
+    public float animationIndex = 0;
 
     public Zombie(Vector3f position) {
         super(position, 20.0f, 20.0f, 1.0f, AssetStorage.getTexture("zombie"), Position.CENTER,  false, 5);
         this.setDamage(3);
         this.setSpeed(1.5f);
         this.setInvincTime(20);
+
+        this.setAnimationDelay(10);
+
+        this.setTextures(textures);
     }
 
     @Override
@@ -33,10 +41,17 @@ public class Zombie extends Enemy {
     @Override
     public void move(Vector2f momentum) {
         this.addToPosition(momentum.normalize().mul(this.getSpeed()),0.0f);
+
+        if(momentum.x  < 0) {
+            this.rotateY(0);
+        }else{
+            this.rotateY(160);
+        }
     }
 
     @Override
     public void tick() {
+
 
         this.setMomentum(this.calculateDirectionToPlayer());
         this.doCollition(-0.25f);

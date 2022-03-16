@@ -1,4 +1,4 @@
-package me.anselm.graphics.shaders.mesh;
+package me.anselm.graphics.mesh;
 
 import me.anselm.graphics.Window;
 import me.anselm.graphics.game.Renderable;
@@ -53,7 +53,7 @@ public class RenderMesh {
     private Shader shader;
     public int amount;
     public float[] vertices;
-    private int[] textureSlots = {0,1,2,3,4,5,6,7,8,9};
+    private int[] textureSlots = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18};
     private List<String> freeSlots;
     private List<Texture> textureList;
     public Map<Renderable, MeshProperty> renderables;
@@ -157,6 +157,8 @@ public class RenderMesh {
             freeSlots.add(String.valueOf(i));
         }
 
+        this.textureList.clear();
+
         this.vertices = new float[meshSize * 4 * VERTEX_SIZE];
     }
 
@@ -191,11 +193,6 @@ public class RenderMesh {
 
         renderables.put(renderable, new MeshProperty(renderable, index));
 
-        if(renderable.getTexture() != null) {
-            if (!textureList.contains(renderable.getTexture())) {
-                textureList.add(renderable.getTexture());
-            }
-        }
 
         loadVertexProperties(renderables.get(renderable));
         freeSlots.remove(String.valueOf(renderables.get(renderable).getIndex()));
@@ -209,6 +206,12 @@ public class RenderMesh {
 
         int offset = index * 4 * VERTEX_SIZE;
         Vector2f[] texCoords = renderable.getTextureCords();
+
+        if(renderable.getTexture() != null) {
+            if (!textureList.contains(renderable.getTexture())) {
+                textureList.add(renderable.getTexture());
+            }
+        }
 
         int texId = 0;
             for (int i = 0; i < textureList.size(); i++) {
@@ -247,6 +250,11 @@ public class RenderMesh {
             }
             return elements;
     }
+
+    public void removeTexture(Texture texture) {
+        this.textureList.remove(texture);
+    }
+
 
     private void loadElementIndices(int[] elements, int index) {
         int offsetArrayIndex = 6 * index;

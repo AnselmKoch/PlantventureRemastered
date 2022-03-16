@@ -1,12 +1,10 @@
 package me.anselm.graphics.menu;
 
 import me.anselm.graphics.game.font.FontRenderer;
-import me.anselm.graphics.game.hud.HUDRenderer;
 import me.anselm.graphics.shaders.Shader;
-import me.anselm.graphics.shaders.mesh.RenderMesh;
+import me.anselm.graphics.mesh.RenderMesh;
 import me.anselm.menu.MenuManagar;
 import me.anselm.menu.buttons.Button;
-import me.anselm.menu.menus.Menu;
 import me.anselm.menu.menus.PickupMenu;
 import me.anselm.utils.LoggerUtils;
 import org.joml.Vector3f;

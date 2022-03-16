@@ -1,4 +1,4 @@
-package me.anselm.graphics.shaders.mesh;
+package me.anselm.graphics.mesh;
 
 import me.anselm.graphics.game.Renderable;
 

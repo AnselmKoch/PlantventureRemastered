@@ -6,7 +6,7 @@ in float fTexID;
 in vec4 oColor;
 
 
-uniform sampler2D tex_sample[10];
+uniform sampler2D tex_sample[19];
 uniform bool drawText = true;
 
 out vec4 color;
