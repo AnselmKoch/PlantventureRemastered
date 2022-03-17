@@ -43,8 +43,13 @@ public abstract class Entity extends Renderable {
 
     private Vector3f healthBarPos;
 
+    private Texture[] textures;
+
     private boolean doTransparencyOnDamage;
     private float damageFrame;
+    private int animationDelay;
+    private int animationIndex;
+    private int animationAmount;
 
     public Entity(Vector3f position, float width, float height, float size, Texture texture, Position center, boolean transparency, int health) {
         super(position, width, height, size, texture, center);
@@ -80,11 +85,26 @@ public abstract class Entity extends Renderable {
         }
     }
 
+    public void doAnimation() {
+        if(this.textures == null) {
+            return;
+        }
+
+        this.animationIndex ++;
+        this.setTexture(textures[animationIndex / animationDelay]);
+
+        if(animationIndex >= animationDelay * (animationAmount) -1) {
+            this.animationIndex = 0;
+        }
+
+    }
+
     public void setMomentumTotal(Vector2f momentum) {
         this.momentum = momentum;
     }
 
     public void processTick() {
+        this.doAnimation();
         this.tick();
 
         EntityRenderer.getRenderMesh().changeRenderable(this);
@@ -180,7 +200,7 @@ public abstract class Entity extends Renderable {
     public Vector2f calculateDirectionToPlayer() {
         Vector3f playerPos = new Vector3f().set(Game.player.getPosition());
 
-        playerPos.sub(this.getPosition()).normalize();
+        playerPos.sub(this.getPosition());
         Vector2f momentum = new Vector2f(playerPos.x,playerPos.y);
 
         return momentum;
@@ -333,5 +353,31 @@ public abstract class Entity extends Renderable {
 
     public void setHealthBarPos(Vector3f healthBarPos) {
         this.healthBarPos = healthBarPos;
+    }
+
+    public Texture[] getTextures() {
+        return textures;
+    }
+
+    public void setTextures(Texture[] textures) {
+        this.textures = textures;
+        this.animationAmount = textures.length;
+        this.animationIndex = 0;
+    }
+
+    public int getAnimationDelay() {
+        return animationDelay;
+    }
+
+    public void setAnimationDelay(int animationDelay) {
+        this.animationDelay = animationDelay;
+    }
+
+    public int getAnimationIndex() {
+        return animationIndex;
+    }
+
+    public void setAnimationIndex(int animationIndex) {
+        this.animationIndex = animationIndex;
     }
 }

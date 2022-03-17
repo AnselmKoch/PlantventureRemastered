@@ -27,6 +27,12 @@ public class Beetle extends Enemy {
         this.setSpeed(1.5f);
         this.setInvincTime(20);
         this.setHealth(2);
+
+        this.setTextures(new Texture[]{
+                AssetStorage.getTexture("beetle"), AssetStorage.getTexture("beetle1"), AssetStorage.getTexture("beetle2")
+        });
+
+        this.setAnimationDelay(10);
     }
 
     @Override

@@ -5,7 +5,7 @@ in vec3 oPos;
 in float fTexID;
 in vec4 oColor;
 
-uniform sampler2D tex_sample[8];
+uniform sampler2D tex_sample[19];
 
 out vec4 color;
 

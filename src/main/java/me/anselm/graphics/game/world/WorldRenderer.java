@@ -2,7 +2,7 @@ package me.anselm.graphics.game.world;
 
 import me.anselm.game.Game;
 import me.anselm.game.world.tiles.Tile;
-import me.anselm.graphics.shaders.mesh.RenderMesh;
+import me.anselm.graphics.mesh.RenderMesh;
 import me.anselm.graphics.shaders.Shader;
 import me.anselm.utils.LoggerUtils;
 import org.joml.Matrix4f;

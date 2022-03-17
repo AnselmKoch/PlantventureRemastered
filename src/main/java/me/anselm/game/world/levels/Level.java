@@ -2,6 +2,9 @@ package me.anselm.game.world.levels;
 
 import me.anselm.game.Game;
 import me.anselm.game.entities.Entity;
+import me.anselm.game.entities.enemies.Bat;
+import me.anselm.game.entities.enemies.Beetle;
+import me.anselm.game.entities.enemies.Brain;
 import me.anselm.game.entities.enemies.Igel;
 import me.anselm.game.entities.enemies.Zombie;
 import me.anselm.game.entities.player.items.bullets.Bullet;
@@ -88,9 +91,8 @@ public class Level {
 
         createTile();
 
-
-        readLevelLayout(difficulty);
-
+            spawnEntity(Brain.class);
+     //readLevelLayout(difficulty);
     }
 
     private void readLevelLayout(Difficulty difficulty) {

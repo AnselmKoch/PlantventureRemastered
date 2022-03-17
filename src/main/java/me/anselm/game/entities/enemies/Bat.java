@@ -18,11 +18,16 @@ public class Bat extends Enemy{
     private float attackTime = 1.0f;
     private float crtAttackTime = 0.0f;
 
+    public static Texture texture;
+
     public Bat(Vector3f position) {
         super(position, 10.0f, 8.0f, 1.0f, AssetStorage.getTexture("bat"), Position.CENTER, false, 10);
         isAttacking = false;
         this.setCooldown(1.5f);
         this.setSpeed(0.75f);
+
+        this.setTextures(new Texture[]{AssetStorage.getTexture("bat"),AssetStorage.getTexture("bat1"),AssetStorage.getTexture("bat2") });
+        this.setAnimationDelay(10);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package me.anselm.graphics.game.font;
 
-import me.anselm.graphics.shaders.mesh.RenderMesh;
+import me.anselm.graphics.mesh.RenderMesh;
 import me.anselm.graphics.shaders.Shader;
 
 public class FontMesh extends RenderMesh {

@@ -23,6 +23,7 @@ import me.anselm.graphics.Window;
 import me.anselm.graphics.game.entity.EntityRenderer;
 import me.anselm.graphics.game.hud.HUDRenderer;
 import me.anselm.graphics.game.world.WorldRenderer;
+import me.anselm.graphics.texture.Texture;
 import me.anselm.menu.MenuManagar;
 import me.anselm.utils.AssetStorage;
 import me.anselm.utils.LoggerUtils;
@@ -42,6 +43,7 @@ public class Player extends Entity {
     private int currentTileY, currentTileX;
     private Item currentBulletInstance;
 
+
     public Player(Vector3f position) {
         super(position, 15.0f, 15.0f, 1.0f, AssetStorage.getTexture("player"), Position.CENTER, true, MAX_HEALTH);
         bullets = new ArrayList<>();
@@ -52,6 +54,16 @@ public class Player extends Entity {
         this.setDamage(1.0f);
         this.setShotspeed(3.0f);
         this.setSpeed(3.0f);
+
+        this.setAnimationDelay(50);
+
+        this.setTextures(new Texture[]{
+                AssetStorage.getTexture("player0"),   AssetStorage.getTexture("player1"),  AssetStorage.getTexture("player2"),
+        });
+
+        for(Texture texture : this.getTextures()) {
+            logger.info(texture + "TEX11");
+        }
     }
 
     @Override
@@ -156,9 +168,9 @@ public class Player extends Entity {
         this.addToPosition(momentum.mul(this.getSpeed()), 0.0f);
 
         if(momentum.x < 0) {
-            this.rotateY(0);
-        }else{
             this.rotateY(160);
+        }else{
+            this.rotateY(0);
         }
 
         Level level = Game.levelManager.getCurrentLevel();
@@ -210,6 +222,13 @@ public class Player extends Entity {
 
     @Override
     public void tick() {
+
+
+       // this.setTexture(this.getTextures()[animationIndex / 30]);
+
+      //  if(animationIndex >= 60) {
+      //      animationIndex = 0;
+      //  }
         this.doDamageColor();
 
     }

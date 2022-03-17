@@ -10,7 +10,7 @@ import me.anselm.game.world.hints.PointingArrow;
 import me.anselm.graphics.Window;
 import me.anselm.graphics.game.font.FontRenderer;
 import me.anselm.graphics.game.items.ItemIcon;
-import me.anselm.graphics.shaders.mesh.RenderMesh;
+import me.anselm.graphics.mesh.RenderMesh;
 import me.anselm.graphics.shaders.Shader;
 import me.anselm.graphics.texture.Texture;
 import me.anselm.utils.AssetStorage;
@@ -19,8 +19,6 @@ import me.anselm.utils.Position;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.slf4j.Logger;
-
-import java.awt.*;
 
 
 public class HUDRenderer {

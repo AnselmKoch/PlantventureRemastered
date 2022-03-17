@@ -1,7 +1,7 @@
 package me.anselm.graphics.game.entity;
 
 import me.anselm.graphics.shaders.Shader;
-import me.anselm.graphics.shaders.mesh.RenderMesh;
+import me.anselm.graphics.mesh.RenderMesh;
 
 public class HealthbarRenderer {
 
