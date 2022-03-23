@@ -23,6 +23,7 @@ public class Input {
                 if(Window.mousePos == null) {
                     return;
                 }
+
                 Window.handleMouseClick();
             }
         }

@@ -16,6 +16,7 @@ import org.joml.Random;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
+import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 
 public class Game {
@@ -69,6 +70,7 @@ public class Game {
         EntityRenderer.getRenderMesh().clear();
 
         EntityRenderer.getRenderMesh().addRenderable(Game.player);
+        EntityRenderer.getRenderMesh().addRenderable(Game.player.getShield());
 
         HUDRenderer.setShowPointingArrows(false);
         HUDRenderer.toggleArrows();
@@ -98,6 +100,13 @@ public class Game {
 
     public static void tick() {
         logger.info("Running game tick...");
+
+        float time = (float)Math.cos(GLFW.glfwGetTime()) + 1.0f;
+        if(time < 1) {
+            time = 1;
+        }
+        player.setSize(time);
+        player.updateVertices();
 
         HUDRenderer.tick();
 

@@ -34,6 +34,7 @@ public abstract class Entity extends Renderable {
     private boolean doDamangeAnimation;
     private boolean isInvincible;
     private int invincTime;
+    private boolean shieldActive;
     private int crtInvincTime;
     private int health;
     public static final int MAX_HEALTH = 10;
@@ -63,6 +64,7 @@ public abstract class Entity extends Renderable {
         this.doTransparencyOnDamage = transparency;
         this.health = health;
 
+        this.shieldActive = false;
         if(this instanceof Player) {
             return;
         }
@@ -201,11 +203,12 @@ public abstract class Entity extends Renderable {
 
     public Vector2f calculateDirectionToPlayer() {
         Vector3f playerPos = new Vector3f().set(Game.player.getPosition());
+        playerPos.z = 0.0f;
 
         playerPos.sub(this.getPosition());
         Vector2f momentum = new Vector2f(playerPos.x,playerPos.y);
 
-        return momentum;
+        return momentum.normalize();
     }
     public void onDamage(int damage) {
 
@@ -384,6 +387,25 @@ public abstract class Entity extends Renderable {
     }
 
     public Shield getShield() {
+        if(this.shield == null) {
+            this.shieldActive = true;
+            this.shield = new Shield(this.getPosition(), width + 5, height);
+            EntityRenderer.getRenderMesh().addRenderable(shield);
+        }
         return shield;
+    }
+
+    public void destroyShield() {
+        EntityRenderer.getRenderMesh().removeRenderable(shield);
+        this.shield = null;
+        this.shieldActive = false;
+    }
+
+    public boolean isShieldActive() {
+        return shieldActive;
+    }
+
+    public void setShieldActive(boolean shieldActive) {
+        this.shieldActive = shieldActive;
     }
 }

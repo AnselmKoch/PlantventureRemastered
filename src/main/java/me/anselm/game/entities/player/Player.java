@@ -44,8 +44,6 @@ public class Player extends Entity {
     private int currentTileY, currentTileX;
     private Item currentBulletInstance;
 
-    private Shield shield;
-
     public Player(Vector3f position) {
         super(position, 15.0f, 15.0f, 1.0f, AssetStorage.getTexture("player"), Position.CENTER, true, MAX_HEALTH);
         bullets = new ArrayList<>();
@@ -57,18 +55,14 @@ public class Player extends Entity {
         this.setShotspeed(3.0f);
         this.setSpeed(3.0f);
 
+        this.getShield();
+
         this.setAnimationDelay(50);
 
-        this.shield = new Shield(new Vector3f().set(position), width + 5, height + 2);
-        EntityRenderer.getRenderMesh().addRenderable(shield);
 
         this.setTextures(new Texture[]{
                 AssetStorage.getTexture("player0"),   AssetStorage.getTexture("player1"),  AssetStorage.getTexture("player2"),
         });
-
-        for(Texture texture : this.getTextures()) {
-            logger.info(texture + "TEX11");
-        }
     }
 
     @Override
@@ -215,10 +209,8 @@ public class Player extends Entity {
                 this.getPosition().sub(new Vector3f(momentum.x, momentum.y, 0.0f).mul(this.getSpeed()));
             }
         }
-
-
-        this.shield.setPosition(new Vector3f().set(this.getPosition()));
-        EntityRenderer.getRenderMesh().changeRenderable(this.shield);
+        this.getShield().setPosition(new Vector3f().set(this.getPosition()));
+        EntityRenderer.getRenderMesh().changeRenderable(this.getShield());
         EntityRenderer.getRenderMesh().changeRenderable(this);
     }
 

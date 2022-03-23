@@ -1,5 +1,6 @@
 package me.anselm.graphics.game;
 
+import me.anselm.game.Game;
 import me.anselm.graphics.texture.Texture;
 import me.anselm.utils.LoggerUtils;
 import me.anselm.utils.Position;
@@ -9,6 +10,8 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.slf4j.Logger;
+
+import java.util.Vector;
 
 public abstract class Renderable {
     private static final Logger logger = LoggerUtils.getLogger(Renderable.class);
@@ -21,6 +24,7 @@ public abstract class Renderable {
     private Vector3f center;
     private Vector2f[] texCoords;
     private Vector3f[] positions;
+    public Vector3f topLeft, topRight, bottomLeft, bottomright;
 
     public Renderable(Vector3f position, float width, float height, float size, Texture texture, Position orientation) {
         logger.info("Instantiating renderable with texture...");
@@ -127,6 +131,11 @@ public abstract class Renderable {
             corner2 = new Vector3f(position.x + width, position.y, position.z);
             corner3 = new Vector3f(position.x, position.y, position.z);
             corner4 = new Vector3f(position.x, position.y + height, position.z);
+
+            topRight = corner1;
+            bottomright = corner2;
+            bottomLeft = corner3;
+            topLeft = corner4;
             center = new Vector3f(position.x + (width / 2), position.y + (height / 2), position.z);
         } else if(orientation == Position.BOTTOMRIGHT) {
             corner1 = new Vector3f(position.x, position.y + height, position.z);
@@ -164,48 +173,8 @@ public abstract class Renderable {
 
         this.texCoords = texCords;
 
-        Vector3f corner1 = null;
-        Vector3f corner2 = null;
-        Vector3f corner3 = null;
-        Vector3f corner4 = null;
+        updateVertices();
 
-        if (orientation == Position.CENTER) {
-            corner1 = new Vector3f(position.x - (width / 2), position.y + (height / 2), position.z);
-            corner2 = new Vector3f(position.x - (width / 2), position.y - (height / 2), position.z);
-            corner3 = new Vector3f(position.x + (width / 2), position.y - (height / 2), position.z);
-            corner4 = new Vector3f(position.x + (width / 2), position.y + (height / 2), position.z);
-            center = position;
-        } else if (orientation == Position.TOPRIGHT) {
-            corner1 = new Vector3f(position.x, position.y, position.z);
-            corner2 = new Vector3f(position.x, position.y - height, position.z);
-            corner3 = new Vector3f(position.x - width, position.y - height, position.z);
-            corner4 = new Vector3f(position.x - width, position.y, position.z);
-            center = new Vector3f(position.x - (width / 2), position.y - (height / 2), position.z);
-        } else if (orientation == Position.TOPLEFT) {
-            corner1 = new Vector3f(position.x + width, position.y, position.z);
-            corner2 = new Vector3f(position.x + width, position.y - height, position.z);
-            corner3 = new Vector3f(position.x, position.y - height, position.z);
-            corner4 = new Vector3f(position.x, position.y, position.z);
-            center = new Vector3f(position.x + (width / 2), position.y - (height / 2), position.z);
-        } else if (orientation == Position.BOTTOMLEFT) {
-            corner1 = new Vector3f(position.x + width, position.y + height, position.z);
-            corner2 = new Vector3f(position.x + width, position.y, position.z);
-            corner3 = new Vector3f(position.x, position.y, position.z);
-            corner4 = new Vector3f(position.x, position.y + height, position.z);
-            center = new Vector3f(position.x + (width / 2), position.y + (height / 2), position.z);
-        } else if (orientation == Position.BOTTOMRIGHT) {
-            corner1 = new Vector3f(position.x, position.y + height, position.z);
-            corner2 = new Vector3f(position.x, position.y, position.z);
-            corner3 = new Vector3f(position.x - width, position.y, position.z);
-            corner4 = new Vector3f(position.x - width, position.y + height, position.z);
-            center = new Vector3f(position.x - (width / 2), position.y + (width / 2), position.z);
-        }
-
-        Vector3f[] corners = new Vector3f[]{
-                corner1,corner2,corner3,corner4
-        };
-
-        this.positions = corners;
         this.color = color;
     }
 
@@ -218,12 +187,13 @@ public abstract class Renderable {
         Vector3f corner4 = null;
 
         if (orientation == Position.CENTER) {
-            corner1 = new Vector3f(position.x - (width / 2), position.y + (height / 2), 0.0f);
-            corner2 = new Vector3f(position.x - (width / 2), position.y - (height / 2), 0.0f);
-            corner3 = new Vector3f(position.x + (width / 2), position.y - (height / 2), 0.0f);
-            corner4 = new Vector3f(position.x + (width / 2), position.y + (height / 2), 0.0f);
+            corner1 = new Vector3f(position.x - ((width / 2) * size) , position.y + ((height / 2)* size) , 0.0f);
+            corner2 = new Vector3f(position.x - ((width / 2)* size) , position.y - ((height / 2)* size) , 0.0f);
+            corner3 = new Vector3f(position.x + ((width / 2)* size) , position.y - ((height / 2)* size) , 0.0f);
+            corner4 = new Vector3f(position.x + ((width / 2)* size) , position.y + ((height / 2)* size) , 0.0f);
+
             position.z = 0.0f;
-            center = position;
+            center = new Vector3f().set(position);
         } else if (orientation == Position.TOPRIGHT) {
             corner1 = new Vector3f(position.x, position.y, position.z);
             corner2 = new Vector3f(position.x, position.y - height, position.z);
@@ -237,10 +207,15 @@ public abstract class Renderable {
             corner4 = new Vector3f(position.x, position.y, position.z);
             center = new Vector3f(position.x + (width /2), position.y - (height / 2 ), position.z);
         } else if(orientation == Position.BOTTOMLEFT) {
-            corner1 = new Vector3f(position.x + width, position.y + height, position.z);
-            corner2 = new Vector3f(position.x + width, position.y, position.z);
-            corner3 = new Vector3f(position.x, position.y, position.z);
-            corner4 = new Vector3f(position.x, position.y + height, position.z);
+            corner2 = new Vector3f(position.x + width, position.y + height, position.z);
+            corner3 = new Vector3f(position.x + width, position.y, position.z);
+            corner4 = new Vector3f(position.x, position.y, position.z);
+            corner1 = new Vector3f(position.x, position.y + height, position.z);
+
+            topRight = corner1;
+            bottomright = corner2;
+            bottomLeft = corner3;
+            topLeft = corner4;
             center = new Vector3f(position.x + (width / 2), position.y + (height / 2), position.z);
         } else if(orientation == Position.BOTTOMRIGHT) {
             corner1 = new Vector3f(position.x, position.y + height, position.z);
@@ -250,9 +225,6 @@ public abstract class Renderable {
             center = new Vector3f(position.x - (width / 2), position.y + (width / 2), position.z);
         }
 
-
-            Quaternionf dest1 = new Quaternionf().identity();
-            Quaternionf dest2 = new Quaternionf().identity();
 
             Vector3f[] corners = new Vector3f[]{
                 corner1,corner2,corner3,corner4
@@ -324,17 +296,37 @@ public abstract class Renderable {
     }
 
     public void rotateZ(float amount) {
-        for(int i = 0; i < this.getPositions().length; i++) {
-            Vector3f vector3f = this.getPositions()[i];
+        for(int i = 1; i <= this.getPositions().length; i++) {
+            Vector3f vector3f = this.getPositions()[i-1];
+            Vector3f origin;
 
-            Vector3f origin = new Vector3f().set(vector3f).sub(this.getCenter());
+            origin = new Vector3f().set(vector3f).sub(this.getCenter());
+
+
 
             origin.rotateZ(amount);
 
-            this.getPositions()[i] = origin.add(this.getCenter());
+            this.getPositions()[i-1] = origin.add(this.getCenter());
 
         }
     }
+
+    public void rotateZ(float amount, Vector3f position) {
+        for(int i = 1; i <= this.getPositions().length; i++) {
+            Vector3f vector3f = this.getPositions()[i-1];
+            Vector3f origin;
+
+            origin = new Vector3f().set(vector3f).sub(position);
+
+
+
+            origin.rotateZ(amount);
+
+            this.getPositions()[i-1] = origin.add(position);
+
+        }
+    }
+
 
 
     public void rotateX(float amount) {
@@ -365,6 +357,18 @@ public abstract class Renderable {
         }
     }
 
+    public void rotateTopCornersAroundBottom(float angle) {
+            Vector3f vector3f = positions[0];
+            Vector3f origin = new Vector3f().set(vector3f).sub(positions[3]);
+            origin.rotateZ(angle);
+            positions[0] = new Vector3f().set(origin.add(positions[3]));
+
+            vector3f = positions[1];
+            origin = new Vector3f().set(vector3f).sub(positions[2]);
+            origin.rotateZ(angle);
+            this.topRight = origin.add(positions[2]);
+
+    }
     public Vector3f getPosition() {
         return position;
     }
@@ -372,6 +376,22 @@ public abstract class Renderable {
     public void setPosition(Vector3f position) {
         this.position = position;
         updateVertices();
+    }
+
+    public Vector3f getTopLeft() {
+        return topLeft;
+    }
+
+    public Vector3f getTopRight() {
+        return topRight;
+    }
+
+    public Vector3f getBottomLeft() {
+        return bottomLeft;
+    }
+
+    public Vector3f getBottomright() {
+        return bottomright;
     }
 
     public float getWidth() {

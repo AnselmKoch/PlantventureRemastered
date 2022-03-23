@@ -186,7 +186,7 @@ public class Window {
                 new int[]{0, 0, Window.TARGETWITDTH, Window.TARGETHEIGHT}, new Vector3f());
         if(Game.ticking) {
             world.sub(Game.player.getPosition()).normalize();
-            Game.player.shoot(new Vector2f(world.x, world.y));
+            Game.player.shoot(new Vector2f(world.x, world.y).normalize());
         }else {
             MenuManagar.handleMouseClick();
         }
