@@ -18,7 +18,6 @@ public abstract class Enemy extends Entity {
 
        this.setHealthbar(new Healthbar(this.getHealthBarPos(), width, 2.0f, this.getHealth(), this));
 
-       logger.info(this.getHealthbar() + " FROM " + this);
     }
 
     public abstract void attack();

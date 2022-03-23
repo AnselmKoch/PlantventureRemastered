@@ -2,6 +2,7 @@ package me.anselm.game.entities.player;
 
 import me.anselm.game.Game;
 import me.anselm.game.entities.Entity;
+import me.anselm.game.entities.Shield;
 import me.anselm.game.entities.player.inventory.Inventory;
 import me.anselm.game.entities.player.inventory.ItemStack;
 import me.anselm.game.entities.player.items.BasicBulletItem;
@@ -43,6 +44,7 @@ public class Player extends Entity {
     private int currentTileY, currentTileX;
     private Item currentBulletInstance;
 
+    private Shield shield;
 
     public Player(Vector3f position) {
         super(position, 15.0f, 15.0f, 1.0f, AssetStorage.getTexture("player"), Position.CENTER, true, MAX_HEALTH);
@@ -56,6 +58,9 @@ public class Player extends Entity {
         this.setSpeed(3.0f);
 
         this.setAnimationDelay(50);
+
+        this.shield = new Shield(new Vector3f().set(position), width + 5, height + 2);
+        EntityRenderer.getRenderMesh().addRenderable(shield);
 
         this.setTextures(new Texture[]{
                 AssetStorage.getTexture("player0"),   AssetStorage.getTexture("player1"),  AssetStorage.getTexture("player2"),
@@ -212,6 +217,8 @@ public class Player extends Entity {
         }
 
 
+        this.shield.setPosition(new Vector3f().set(this.getPosition()));
+        EntityRenderer.getRenderMesh().changeRenderable(this.shield);
         EntityRenderer.getRenderMesh().changeRenderable(this);
     }
 

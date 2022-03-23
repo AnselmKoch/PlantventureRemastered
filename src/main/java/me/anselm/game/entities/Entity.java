@@ -39,6 +39,8 @@ public abstract class Entity extends Renderable {
     public static final int MAX_HEALTH = 10;
     private float currentCooldown = 0.0f;
 
+    private Shield shield;
+
     private Healthbar healthbar;
 
     private Vector3f healthBarPos;
@@ -379,5 +381,9 @@ public abstract class Entity extends Renderable {
 
     public void setAnimationIndex(int animationIndex) {
         this.animationIndex = animationIndex;
+    }
+
+    public Shield getShield() {
+        return shield;
     }
 }

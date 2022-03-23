@@ -48,6 +48,7 @@ public class AssetStorage {
         textureHashMap.put("beetle1", new Texture("enemy/beetle1"));
         textureHashMap.put("beetle2", new Texture("enemy/beetle2"));
         textureHashMap.put("brain", new Texture("enemy/brain"));
+        textureHashMap.put("shield", new Texture("util/shield"));
 
     }
 

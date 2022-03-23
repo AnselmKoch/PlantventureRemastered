@@ -2,7 +2,6 @@ package me.anselm;
 
 import me.anselm.game.Game;
 import me.anselm.graphics.game.entity.EntityRenderer;
-import me.anselm.graphics.game.entity.Healthbar;
 import me.anselm.graphics.game.entity.HealthbarRenderer;
 import me.anselm.graphics.game.font.FontRenderer;
 import me.anselm.graphics.game.hud.HUDRenderer;

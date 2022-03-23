@@ -36,7 +36,6 @@ public class Brain extends Enemy{
     @Override
     public void tick() {
         if(rectangle == null) {
-            System.out.println("IS NULL RECTANLGE!!!!");
             return;
         }
     }
@@ -52,7 +51,8 @@ public class Brain extends Enemy{
 
         momentum = direction;
 
-        float angle = this.getPosition().angle(direction);
+
+        float angle = this.getPosition().angle(new Vector3f(direction.x, direction.y,0.0f));
 
         angle = (float) Math.toDegrees(angle);
 
@@ -69,7 +69,7 @@ public class Brain extends Enemy{
 
         }else{
             this.rectangle.updateVertices();
-            this.rectangle.rotateZ(angle);
+            this.rectangle.rotateZ(angle + 90f);
         }
 
         EntityRenderer.getRenderMesh().changeRenderable(this.rectangle);
