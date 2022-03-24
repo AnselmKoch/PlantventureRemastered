@@ -1,7 +1,6 @@
 package me.anselm.game.world.levels.layouts.layout.easy;
 
 import me.anselm.game.entities.enemies.Brain;
-import me.anselm.game.entities.enemies.Zombie;
 import me.anselm.game.world.levels.layouts.LevelLayout;
 import me.anselm.game.world.levels.layouts.SpawnInformation;
 import org.joml.Vector3f;
