@@ -5,6 +5,7 @@ import me.anselm.game.entities.enemies.Beetle;
 import me.anselm.game.entities.enemies.Enemy;
 import me.anselm.game.entities.enemies.Zombie;
 import me.anselm.game.entities.player.Player;
+import me.anselm.game.entities.player.items.bullets.Bullet;
 import me.anselm.game.physics.CollitionDetector;
 import me.anselm.graphics.game.Renderable;
 import me.anselm.graphics.game.entity.EntityRenderer;
@@ -21,6 +22,8 @@ import org.slf4j.Logger;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class Entity extends Renderable {
     private static final Logger logger = LoggerUtils.getLogger(Entity.class);
@@ -40,6 +43,7 @@ public abstract class Entity extends Renderable {
     public static final int MAX_HEALTH = 10;
     private float currentCooldown = 0.0f;
 
+    private List<Bullet> hitBullets;
     private Shield shield;
 
     private Healthbar healthbar;
@@ -63,6 +67,7 @@ public abstract class Entity extends Renderable {
         this.crtInvincTime = 0;
         this.doTransparencyOnDamage = transparency;
         this.health = health;
+        this.hitBullets = new ArrayList<>();
 
         this.shieldActive = false;
         if(this instanceof Player) {
@@ -210,7 +215,21 @@ public abstract class Entity extends Renderable {
 
         return momentum.normalize();
     }
-    public void onDamage(int damage) {
+
+    public void onDamage(int damage, Bullet bullet) {
+
+
+        if (this.shieldActive) {
+            if (bullet!= null) {
+                bullet.getMomentum().mul(-1.0f);
+            }
+
+            this.hitBullets.add(bullet);
+            this.destroyShield();
+
+            return;
+        }
+
 
         if(isInvincible) {
             return;
@@ -233,6 +252,11 @@ public abstract class Entity extends Renderable {
 
         if(this instanceof Player) {
             HUDRenderer.updatePlayerHearts();
+        }
+
+        if(bullet != null && !bullet.isPiercing()) {
+            Game.player.getBullets().remove(bullet);
+            EntityRenderer.getRenderMesh().removeRenderable(bullet);
         }
 
         if(this.healthbar == null) {

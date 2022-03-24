@@ -91,8 +91,8 @@ public class Level {
 
         createTile();
 
-            spawnEntity(Brain.class);
-     //readLevelLayout(difficulty);
+            //spawnEntity(Brain.class);
+     readLevelLayout(difficulty);
     }
 
     private void readLevelLayout(Difficulty difficulty) {
@@ -112,19 +112,15 @@ public class Level {
             entity.processTick();
 
             if(CollitionDetector.colides(Game.player, entity)) {
-                Game.player.onDamage((int)entity.getDamage());
+                Game.player.onDamage((int)entity.getDamage(), null);
             }
 
             for(int j = 0; j < Game.player.getBullets().size(); j++) {
                 Bullet bullet = Game.player.getBullets().get(j);
 
                 if(CollitionDetector.colides(bullet, entity)) {
-                    entity.onDamage((int)bullet.getDamage());
+                    entity.onDamage((int)bullet.getDamage(), bullet);
 
-                    if(!bullet.isPiercing()) {
-                        Game.player.getBullets().remove(j);
-                        EntityRenderer.getRenderMesh().removeRenderable(bullet);
-                    }
                     checkLevelDone();
                 }
             }

@@ -209,6 +209,9 @@ public class Player extends Entity {
                 this.getPosition().sub(new Vector3f(momentum.x, momentum.y, 0.0f).mul(this.getSpeed()));
             }
         }
+        if(!isShieldActive()) {
+            return;
+        }
         this.getShield().setPosition(new Vector3f().set(this.getPosition()));
         EntityRenderer.getRenderMesh().changeRenderable(this.getShield());
         EntityRenderer.getRenderMesh().changeRenderable(this);

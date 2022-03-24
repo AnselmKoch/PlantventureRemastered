@@ -4,6 +4,7 @@ import me.anselm.game.Game;
 import me.anselm.game.world.levels.layouts.Difficulty;
 import me.anselm.game.world.levels.layouts.LevelLayout;
 import me.anselm.game.world.levels.layouts.layout.easy.EasyLayout02;
+import me.anselm.game.world.levels.layouts.layout.easy.EasyLayout03;
 import me.anselm.game.world.levels.layouts.layout.easy.EasyLeayout01;
 import me.anselm.game.world.levels.layouts.layout.peaceful.PeaceFulLayout00;
 import org.joml.Vector2i;
@@ -37,6 +38,7 @@ public class LevelManager {
         levelLayouts.get(Difficulty.PEACEFUL).add(new PeaceFulLayout00());
         levelLayouts.get(Difficulty.EASY).add(new EasyLeayout01());
         levelLayouts.get(Difficulty.EASY).add(new EasyLayout02());
+        levelLayouts.get(Difficulty.EASY).add(new EasyLayout03());
 
         levelIndex = new Vector2i(0,0);
         currentLevel = new Level(Game.difficultyLevel);

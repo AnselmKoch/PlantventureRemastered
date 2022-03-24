@@ -21,6 +21,7 @@ public class Brain extends Enemy{
     public Brain(Vector3f position) {
         super(position, 15, 15, 1.0f, AssetStorage.getTexture("brain"), Position.CENTER, false, 10);
         this.setCooldown(1.0f);
+        this.getShield();
     }
 
     @Override
@@ -47,31 +48,11 @@ public class Brain extends Enemy{
 
     @Override
     public void attack() {
-        Vector2f direction = this.calculateDirectionToPlayer();
-
-        momentum = direction;
-
-
-        float angle = this.getPosition().angle(new Vector3f(direction.x, direction.y,0.0f));
-
-        angle = (float) Math.toDegrees(angle);
-
-        System.out.println(angle + "ANGLE");
-
-
-        if (this.rectangle == null) {
-            Rectangle rectangle = new Rectangle(new Vector3f().set(this.getPosition()), 1.0f, 1000.0f,
-                    1.0f, Position.CENTER, new Vector4f(0.0f, 0.0f, 1.0f, 1.0f));
-            rectangle.rotateZ(angle);
-            rectangle.setTexture(AssetStorage.getTexture("empty"));
-            EntityRenderer.getRenderMesh().addRenderable(rectangle);
-            this.rectangle = rectangle;
-
-        }else{
-            this.rectangle.updateVertices();
-            this.rectangle.rotateZ(angle + 90f);
+        if(this.isShieldActive()) {
+            return;
         }
 
-        EntityRenderer.getRenderMesh().changeRenderable(this.rectangle);
+
+        this.getShield();
     }
 }

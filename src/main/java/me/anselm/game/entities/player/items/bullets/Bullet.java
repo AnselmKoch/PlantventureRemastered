@@ -115,10 +115,6 @@ public abstract class Bullet extends Entity {
 
         return nearest;
     }
-    @Override
-    public void onDamage(int damge) {
-
-    }
 
     public boolean isHoming() {
         return isHoming;

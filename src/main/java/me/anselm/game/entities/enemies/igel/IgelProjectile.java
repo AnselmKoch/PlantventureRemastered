@@ -49,7 +49,7 @@ public class IgelProjectile extends Entity {
         EntityRenderer.getRenderMesh().changeRenderable(this);
 
         if(CollitionDetector.colides(this, Game.player )) {
-            Game.player.onDamage((int)parent.getDamage());
+            Game.player.onDamage((int)parent.getDamage(), null);
             EntityRenderer.getRenderMesh().removeRenderable(this);
             Game.levelManager.getCurrentLevel().getProjectileList().remove(this);
         }
